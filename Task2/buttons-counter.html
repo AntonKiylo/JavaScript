@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        button{
+            width: 50px;
+            height: 50px;
+            font-size: large;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<button>0</button>
+<button>0</button>
+<button>0</button>
+<button>0</button>
+<button>0</button>
+<button>0</button>
+<script>
+    let elem = document.querySelectorAll('button');
+
+    let clickCounterRef = null;
+
+    function clickCounter() {
+
+        function funcForRef() {
+            this.innerHTML++;
+        }
+
+        clickCounterRef = funcForRef;
+    }
+
+    clickCounter();
+
+    for (let i = 0; i < elem.length; i++) {
+        elem[i].onclick = clickCounterRef;
+    }
+
+    /*for (let i = 0; i < btns.length; i++) {
+        btns[i].innerHTML = '0';
+        btns[i].onclick = function () {
+            btns[i].innerHTML++;
+        };
+    }*/
+</script>
+</body>
+</html>

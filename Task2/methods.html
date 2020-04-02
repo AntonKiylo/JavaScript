@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>methods</title>
+</head>
+<body>
+<script>
+    let numbers = [2, 3, 5, 7, 11, 13, 17];
+
+    currentSums(numbers);
+
+    function currentSums(inputArray) {
+
+        let result = [];
+
+        let action = [];
+
+        let actionFunction = inputArray.reduce(function (prevValue, currentValue) {
+            action.push(prevValue);
+            return (`${prevValue }+${currentValue }`);
+        });
+
+        let resultFunction = inputArray.reduce(function (prevValue, currentValue) {
+            result.push(prevValue);
+            return prevValue + currentValue;
+        });
+
+        result.push(resultFunction);
+
+        action.push(actionFunction);
+
+        console.log(`[${action.toString()}] = [${result.toString()}]`);
+    }
+
+    /**************************************************/
+
+    let phrase = 'Каждый охотник желает знать, где сидит фазан.';
+
+    firstLettersFromString(phrase.split(' '));
+
+    function firstLettersFromString(inputArray) {
+
+        let arrayOfFirstLetters = inputArray.map(function (currentValue) {
+            return currentValue.charAt(0);
+        });
+
+        console.log(`[${arrayOfFirstLetters.toString()}]`);
+    }
+
+    /**************************************************/
+
+    let anyNumbers = [-1, 2, 3.5, -12, 4, 1.25, 16];
+
+    getPositiveIntegers(anyNumbers);
+
+    function getPositiveIntegers(inputArray) {
+
+        let filteredArray = inputArray.filter(function (currentValue) {
+            return currentValue > 0 && Number.isInteger(currentValue) === true;
+        });
+
+        console.log(`[${filteredArray.toString()}]`);
+    }
+
+    /**************************************************/
+
+    changeArray([ 1, 2, 3, 4, 5 ]);
+    changeArray([ 1, 2 ]);
+    changeArray([ 1, 2, 3, 4, 5, 6, 7, 8]);
+    changeArray([ 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+    function changeArray(inputArray) {
+
+        let secondHalf = inputArray;
+
+        let middleNumber = [];
+
+        let firstHalf = inputArray.splice(0, inputArray.length/2);
+
+        if (inputArray.length % 2 !== 0 && inputArray.length > 1) {
+            middleNumber.push(Number(inputArray.splice(0, 1)));
+        }
+
+        let reversedArray = secondHalf.concat(middleNumber.concat(firstHalf));
+
+        console.log(`[${reversedArray.toString()}]`);
+    }
+</script>
+</body>
+</html>

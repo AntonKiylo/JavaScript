@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>compression</title>
+</head>
+<body>
+<script>
+    compress('a');
+    compress('aaa');
+    compress('aabbb');
+    compress('aabcc');
+
+    function compress(inputText) {
+
+        let object = {};
+
+        for (let i = 0; i < inputText.length; i++) {
+
+            if (inputText[i] in object) {
+                object[inputText[i]]++;
+            }
+            else {
+                object[inputText[i]] = 1;
+            }
+        }
+
+        let outputText = '';
+
+        for (let key in object) {
+            if (Object.keys(object).length === 1 && object[key] === 1) {
+                object[key] = '';
+            }
+            outputText = outputText + key + object[key];
+        }
+
+        console.log(`“${inputText}” => “${outputText}”`);
+    }
+
+    unCompress('a');
+    unCompress('a5');
+    unCompress('a2b3');
+    unCompress('a12b1c3');
+
+    function unCompress(inputValue) {
+
+        let object = {};
+
+        let objectKey = '';
+
+        let objectValue = '';
+
+        for (let i = 0; i < inputValue.length; i++) {
+            if (inputValue.length === 1) {
+                objectKey = inputValue[i];
+                object[objectKey] = '1';
+            }
+            else if (inputValue[i].match(/^[a-zA-Z]+$/)) {
+                objectKey = inputValue[i];
+                objectValue = '';
+            }
+            else if (inputValue[i].match(/^[0-9]+$/)) {
+                objectValue += inputValue[i];
+                object[objectKey] = objectValue;
+            }
+        }
+
+        let outputValue = '';
+
+        for (let key in object) {
+            for (let j = 0; j < object[key]; j++) {
+                outputValue += key;
+            }
+        }
+
+        console.log(`"${inputValue}" => "${outputValue}"`);
+    }
+
+</script>
+</body>
+</html>

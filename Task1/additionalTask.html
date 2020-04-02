@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>additional</title>
+</head>
+<body>
+<script>
+    let lastName = prompt('Ваша фамилия: ');
+    while ((lastName === null) || (lastName.length <= 1) || lastName.match(/^[?!,.\d\s]+$/)) {
+        lastName = prompt("Введите фамилию корректно!");
+    }
+
+    let firstName = prompt('Ваше имя: ');
+    while ((firstName === null) || (firstName.length <= 1) || firstName.match(/^[?!,.\d\s]+$/)) {
+        firstName = prompt("Введите имя корректно!");
+    }
+
+    let secondName = prompt('Ваше отчество: ');
+    if ((secondName === null) || (secondName.length <= 1) || secondName.match(/^[?!,.\d\s]+$/)) {
+        firstName = prompt("Введите отчество корректно!");
+    }
+
+    let ageStr = prompt('Ваш возраст: ');
+    let age = parseInt(ageStr);
+    while (isNaN(age) || age <= 0 || age > 120) {
+        ageStr = prompt("Введите возраст корректно!");
+        age = String(ageStr);
+    }
+
+    let adulthood;
+    age > 18 ? adulthood = 'совершеннолетний' : adulthood = 'несовершеннолетний';
+
+    let gender = confirm('Ваш пол - женский?');
+    gender ? gender = 'женский' : gender = 'мужской';
+
+    let pension;
+    age >= 60 ? pension = 'да' : pension = 'нет';
+
+    alert(`Ваше ФИО: ${lastName} ${firstName} ${secondName}
+Ваш возраст в годах: ${age}
+Ваш возраст в днях: ${age * 365}
+Вы ${adulthood}
+Ваш пол: ${gender}
+Вы на пенсии: ${pension}`)
+</script>
+</body>
+</html>

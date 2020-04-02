@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>quadratic</title>
+</head>
+<body>
+<script>
+    quadraticEquation(4, -8, 1);
+    quadraticEquation(5, -2, -1);
+    quadraticEquation(1, -8, 72);
+    quadraticEquation(1, 12, 36);
+
+    function quadraticEquation(a, b, c) {
+        let D = b * b - 4 * a * c;
+        let x1 = (-b + Math.sqrt(D)) / (2*a);
+        let x2 = (-b - Math.sqrt(D)) / (2*a);
+
+        if (D < 0) {
+            console.log(`уравнение  = 0 не имеет вещественных корней`);
+        } else if (D === 0) {
+            console.log(`уравнение ${String(a).replace('1', '')}x^2 ${b >= 0 ? `+ ${b}` : String(b).replace('-', '- ')}x ${c >= 0 ? `+ ${c}` : String(c).replace('-', '- ')} = 0 имеет один корень x = ${x1}`);
+        } else if (D > 0) {
+            console.log(`уравнение ${String(a).replace('1', '')}x^2 ${b >= 0 ? `+ ${b}` : String(b).replace('-', '- ')}x ${c >= 0 ? `+ ${c}` : String(c).replace('-', '- ')} = 0 имеет корни x1 = ${x1} и x2 = ${x2}`);
+        }
+    }
+</script>
+</body>
+</html>
