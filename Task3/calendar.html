@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>calendar</title>
+    <style>
+        #calendar{
+            box-shadow: 10px 10px 23px 0 rgba(0,0,0,0.35);
+            border-radius: 15px;
+            overflow: hidden;
+            width: fit-content;
+            margin: 12px auto;
+        }
+
+        table{
+            border-collapse: collapse;
+        }
+
+        #calendarTitle{
+            background-color: #4fc1ef;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        td, th{
+            text-align: center;
+            width: 50px;
+            height: 50px;
+        }
+
+        tr{
+            background-color: #e9f4fc;
+        }
+
+        tr:nth-child(odd){
+            background-color: #d0e9f9;
+        }
+
+        td:nth-child(6), td:nth-child(7), th:nth-child(6), th:nth-child(7){
+            color: #f00;
+        }
+    </style>
+</head>
+<body>
+<script>
+    let container = document.createElement('div');
+    container.id = 'calendar';
+    document.body.append(container);
+    let month = prompt('Введите номер месяца:');
+    while (isNaN(month) || month <= 0 || month > 12) {
+        month = prompt("Введите месяц корректно!");
+    }
+
+    let year = prompt('Введите год');
+    while (isNaN(year) || year <= 0 || year.length < 3 || year.length > 4) {
+        year = prompt("Введите год корректно!");
+    }
+
+    function createCalendar(inputMonth, inputYear) {
+        let monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+            currentMonth = inputMonth - 1,
+            currentDate = new Date(inputYear, currentMonth),
+            table = `<div id="calendarTitle"><button onclick="decrementYear()"><<</button><button onclick="decrementMonth()"><</button><div style="width: 170px; text-align: center">${monthNames[currentMonth]} / ${currentDate.getFullYear()} года</div><button onclick="incrementMonth()">></button><button onclick="incrementYear()">>></button></div><table><tbody><tr><th>mon</th><th>tue</th><th>wed</th><th>thu</th><th>fri</th><th>sat</th><th>sun</th></tr><tr>`;
+
+        for (let i = 0; i < dayOfWeek(currentDate); i++) {
+            table += `<td></td>`;
+        }
+
+        while (currentDate.getMonth() === currentMonth) {
+            table += `<td>${currentDate.getDate()}</td>`;
+
+            if (dayOfWeek(currentDate) % 7 === 6) {
+                table += `</tr><tr>`;
+            }
+
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        if (dayOfWeek(currentDate) !== 0) {
+            for (let i = dayOfWeek(currentDate); i < 7; i++) {
+                table += `<td></td>`;
+            }
+        }
+
+        table += `</tr></tbody></table>`;
+        document.getElementById('calendar').innerHTML = table;
+    }
+
+    function dayOfWeek(currentDate) {
+        let day = currentDate.getDay();
+        if (day === 0) {
+            day = 7;
+        }
+        return day - 1;
+    }
+
+    createCalendar(month, year);
+
+    function incrementYear() {
+        createCalendar(month, ++year);
+    }
+
+    function decrementYear() {
+        createCalendar(month, --year);
+    }
+
+    function incrementMonth() {
+        if (month > 11) {
+            year++;
+            month = 0;
+        }
+        createCalendar(++month, year);
+    }
+
+    function decrementMonth() {
+        if (month < 2) {
+            year--;
+            month = 13;
+        }
+        createCalendar(--month, year);
+    }
+</script>
+</body>
+</html>

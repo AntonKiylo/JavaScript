@@ -18,9 +18,29 @@
 <button>0</button>
 <button>0</button>
 <button>0</button>
-<button>0</button>
+
 <script>
-    let elem = document.querySelectorAll('button');
+    let btns = document.querySelectorAll('button');
+
+    function funcForRef() {
+        let count = 0;
+        return function () {
+            count++;
+            return count;
+        }
+    }
+
+    for (let i = 0; i < btns.length; i++) {
+        let clickCounterRef = funcForRef();
+
+        btns[i].onclick = function () {
+            btns[i].innerHTML = clickCounterRef();
+        }
+    }
+
+
+
+    /*let elem = document.querySelectorAll('button');
 
     let clickCounterRef = null;
 
@@ -37,7 +57,7 @@
 
     for (let i = 0; i < elem.length; i++) {
         elem[i].onclick = clickCounterRef;
-    }
+    }*/
 
     /*for (let i = 0; i < btns.length; i++) {
         btns[i].innerHTML = '0';

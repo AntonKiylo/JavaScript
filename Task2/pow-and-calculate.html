@@ -6,6 +6,11 @@
 </head>
 <body>
 <script>
+    pow(-2)(3);
+    pow(4)(2);
+    pow(16)(0);
+    pow(2)(-3);
+
     function pow(a) {
 
         return function(n) {
@@ -31,15 +36,10 @@
                 result = 1 / result;
             }
 
-            return result;
+            console.log(`${a}^${n} = ${result}`);
+
         }
-
     }
-
-    console.log(pow(-2)(3));
-    console.log(pow(4)(2));
-    console.log(pow(16)(0));
-    console.log(pow(2)(-3));
 
     /**************************************************/
 

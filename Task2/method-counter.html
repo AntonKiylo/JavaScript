@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>method-counter</title>
+</head>
+<body>
+<script>
+    function getCounter(inputValue) {
+        let newObject = {};
+        newObject.counter = inputValue;
+
+        newObject.log = function (){
+            console.log(this.counter);
+            return this;
+        }
+        newObject.count = function(inputValue){
+            this.counter += inputValue;
+            return this;
+        }
+        newObject.reset = function(){
+            this.counter = 0;
+            return this;
+        }
+
+        return newObject;
+    }
+
+    let counter = getCounter(5);
+
+    counter.log().count(4).log().count(3).log().reset().log().count(8).log();
+
+    /*function sum(inputValue) {
+        let object = {};
+        object.counter = inputValue;
+
+        object.sum = function (a) {
+            this.counter += a;
+            console.log(this.counter);
+            return this
+        }
+
+        return object;
+    }
+
+    let a = sum(5);
+
+    a.sum(2).sum(3);*/
+</script>
+</body>
+</html>

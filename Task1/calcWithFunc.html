@@ -6,38 +6,11 @@
 </head>
 <body>
 <script>
-    function b(name) {
-        return function (age) {
-            return function (status) {
-                console.log(`${name}` * `${age}` / `${status}`)
-            }
-        }
-    }
-
-    let b1 = b(10);
-    b1(2)(5);
-
-    function a(phrase) {
-        return function (name) {
-            console.log(`${name} ${phrase}`)
-        }
-    }
-    let name = a('Go ahead');
-    name('John');
-
-    function sev(par1) {
-        return function (par2) {
-            return par1 * par2;
-        }
-    }
-
-    console.log(sev(5)(5));
-
-    console.log(`Результат: 7 * 5 = ${seven(times(five()))}`);
-    console.log(`Результат: 4 + 9 = ${four(plus(nine()))}`);
-    console.log(`Результат: 8 - 3 = ${eight(minus(three()))}`);
-    console.log(`Результат: 6 / 2 = ${six(dividedBy(two()))}`);
-    console.log(`Результат: 9 / 3 = ${nine(dividedBy(three()))}`);
+    seven(times(five()));
+    four(plus(nine()));
+    eight(minus(three()));
+    six(dividedBy(two()));
+    nine(dividedBy(three()));
 
     function zero(func) {
         if (func === undefined) {
@@ -125,25 +98,25 @@
 
     function plus(number) {
         return function(current){
-            return current + number
+            console.log(`Результат: ${current + ''} + ${number + ''} = ${current + number}`);
         }
     }
 
     function minus(number) {
         return function(current){
-            return current - number
+            console.log(`Результат: ${current + ''} - ${number + ''} = ${current - number}`);
         }
     }
 
     function times(number) {
         return function(current){
-            return current * number
+            console.log(`Результат: ${current + ''} * ${number + ''} = ${current * number}`);
         }
     }
 
     function dividedBy(number) {
         return function(current){
-            return current / number
+            console.log(`Результат: ${current + ''} / ${number + ''} = ${current / number}`);
         }
     }
 </script>

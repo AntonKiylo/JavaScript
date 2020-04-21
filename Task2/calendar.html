@@ -9,18 +9,21 @@
             border-radius: 15px;
             overflow: hidden;
             width: fit-content;
+            margin: 12px auto;
         }
 
         table{
             border-collapse: collapse;
         }
 
-        caption{
+        #calendarTitle{
             background-color: #4fc1ef;
-            padding: 20px 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
         }
 
-        td{
+        td, th{
             text-align: center;
             width: 50px;
             height: 50px;
@@ -34,79 +37,66 @@
             background-color: #d0e9f9;
         }
 
-        td:nth-child(6), td:nth-child(7){
+        td:nth-child(6), td:nth-child(7), th:nth-child(6), th:nth-child(7){
             color: #f00;
         }
     </style>
 </head>
 <body>
-<div id="calendar"></div>
 <script>
-    /*let year = prompt('year');
-
-    let month = prompt('month');*/
-
-    let calendar = document.getElementById('calendar');
-
-    createCalendar(calendar, 1986, 12);
-
-    function createCalendar(elem, year, month) {
-
-        let mon = month - 1; // месяцы в JS идут от 0 до 11, а не от 1 до 12
-
-        let date = new Date(year, mon);
-
-        let table = '<table>';
-
-        let title = '<tr><td>mon</td><td>tue</td><td>wed</td><td>thu</td><td>fri</td><td>sat</td><td>sun</td></tr><tr>';
-
-        table += '<caption>' + date.getMonth() + '</caption>';
-
-        table += title;
-
-        // пробелы для первого ряда
-        // с понедельника до первого дня месяца
-        // * * * 1  2  3  4
-        for (let i = 0; i < getDay(date); i++) {
-            table += '<td></td>';
-        }
-
-        // <td> ячейки календаря с датами
-        while (date.getMonth() === mon) {
-            table += '<td>' + date.getDate() + '</td>';
-
-            if (getDay(date) % 7 === 6) {
-                // вс, последний день - перевод строки
-                table += '</tr><tr>';
-            }
-
-            date.setDate(date.getDate() + 1);
-        }
-
-        // добить таблицу пустыми ячейками, если нужно
-        // 29 30 31 * * * *
-        if (getDay(date) !== 0) {
-            for (let i = getDay(date); i < 7; i++) {
-                table += '<td></td>';
-            }
-        }
-
-        // закрыть таблицу
-        table += '</tr></table>';
-
-        elem.innerHTML = table;
+    let month = prompt('Введите номер месяца:');
+    while (isNaN(month) || month <= 0 || month > 12) {
+        month = prompt("Введите месяц корректно!");
     }
 
-    function getDay(date) {
-        // получить номер дня недели, от 0 (пн) до 6 (вс)
+    let year = prompt('Введите год');
+    while (isNaN(year) || year <= 0 || year.length < 3 || year.length > 4) {
+        year = prompt("Введите год корректно!");
+    }
 
-        let day = date.getDay();
-        if (day === 0) {      // сделать воскресенье (0) последним днем
+    let container = document.createElement('div');
+    container.id = 'calendar';
+    document.body.append(container);
+
+    function createCalendar(inputMonth, inputYear) {
+        let monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+            currentMonth = inputMonth -1,
+            currentDate = new Date(inputYear, currentMonth),
+            table = `<div id="calendarTitle">${monthNames[currentMonth]} / ${currentDate.getFullYear()} года</div><table><tbody><tr><th>mon</th><th>tue</th><th>wed</th><th>thu</th><th>fri</th><th>sat</th><th>sun</th></tr><tr>`;
+
+        for (let i = 0; i < dayOfWeek(currentDate); i++) {
+            table += `<td></td>`;
+        }
+
+        while (currentDate.getMonth() === currentMonth) {
+            table += `<td>${currentDate.getDate()}</td>`;
+
+            if (dayOfWeek(currentDate) % 7 === 6) {
+                table += `</tr><tr>`;
+            }
+
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        if (dayOfWeek(currentDate) !== 0) {
+            for (let i = dayOfWeek(currentDate); i < 7; i++) {
+                table += `<td></td>`;
+            }
+        }
+
+        table += `</tr></tbody></table>`;
+        document.getElementById('calendar').innerHTML = table;
+    }
+
+    function dayOfWeek(currentDate) {
+        let day = currentDate.getDay();
+        if (day === 0) {
             day = 7;
         }
-
         return day - 1;
     }
+
+    createCalendar(month, year);
 </script>
 </body>
 </html>

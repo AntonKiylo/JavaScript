@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>editable-list</title>
+</head>
+<body>
+<script>
+    let numericList = document.createElement('ol');
+    numericList.style.cssText = 'padding: 0; margin-left: 20px; width: fit-content;'
+
+    numericList.innerHTML = '<li>First element</li><li>Second element</li><li>Third element</li><li>Fourth element</li><li>Fifth element</li>';
+
+    let input = document.createElement('input');
+    input.setAttribute("type", "text");
+    input.setAttribute("placeholder", "Enter your text!");
+
+    let addButton = document.createElement('button');
+    addButton.id = 'add';
+    addButton.innerHTML = 'Add';
+
+    let removeButton = document.createElement('button');
+    removeButton.id = 'remove';
+    removeButton.innerHTML = 'Remove';
+
+    document.body.append(numericList);
+    document.body.append(input);
+    document.body.append(addButton);
+    document.body.append(removeButton);
+    let btns = document.querySelectorAll('button');
+    for (let i = 0; i < btns.length; i++) {
+        btns[i].style.marginLeft = '10px';
+    }
+
+
+    input.onkeydown = function(event) {
+        if (event.key === 'Enter') {
+            addFunction();
+        }
+    };
+
+    addButton.onclick = addFunction;
+
+    function addFunction() {
+        let li = document.createElement('li');
+
+        li.innerHTML = input.value;
+
+        if (li.innerHTML.trim() === '') {
+            return false;
+        }
+
+        input.value = '';
+
+        numericList.append(li);
+
+        removeButton.disabled = false;
+    }
+
+    removeButton.onclick = function () {
+        numericList.lastChild.remove();
+
+        if (numericList.innerHTML === '') {
+            removeButton.disabled = true;
+        }
+    };
+
+    numericList.onclick = function(event) {
+        let target = event.target;
+
+        let editingInput = document.createElement('input');
+        editingInput.setAttribute("type", "text");
+
+        editingInput.value = target.innerHTML;
+
+        target.innerHTML = '';
+
+        target.append(editingInput);
+
+        editingInput.focus();
+
+        editingInput.onkeydown = function(event) {
+            if (event.key === 'Enter') {
+                this.blur();
+            }
+        };
+
+        editingInput.onblur = function () {
+            target.innerHTML = editingInput.value;
+            editingInput.remove();
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>events</title>
+</head>
+<body>
+<script>
+    let link1 = document.createElement('a');
+    setAttribute(link1, {'title': 'Link to Facebook', 'href': 'https://facebook.com/'});
+    link1.innerHTML = 'facebook';
+    document.body.append(link1);
+
+    let link2 = document.createElement('a');
+    setAttribute(link2, {'title': 'Link to Youtube', 'href': 'https://youtube.com/'});
+    link2.innerHTML = 'youtube';
+    document.body.append(link2);
+
+    let link3 = document.createElement('a');
+    setAttribute(link3, {'title': 'Link to Twitter', 'href': 'https://twitter.com/'});
+    link3.innerHTML = 'twitter';
+    document.body.append(link3);
+
+    let links = document.querySelectorAll('a');
+
+    for (let i = 0; i < links.length; i++) {
+        links[i].style.cssText = 'display: block; width: fit-content; margin-bottom: 15px';
+    }
+
+    function setAttribute(elem, attr) {
+        for (let key in attr) {
+            elem.setAttribute(key, attr[key]);
+        }
+    }
+
+    let horizontalLine1 = document.createElement('hr');
+    document.body.append(horizontalLine1);
+
+    /************************************************/
+    let input1 = document.createElement('input');
+    input1.setAttribute('value', 'The first input');
+    input1.className = 'firstInput';
+    document.body.append(input1);
+
+    let input2 = document.createElement('input');
+    input2.setAttribute('value', 'The second input');
+    input2.className = 'firstInput';
+    document.body.append(input2);
+
+    let input3 = document.createElement('input');
+    input3.setAttribute('value', 'The third input');
+    input3.className = 'firstInput';
+    document.body.append(input3);
+
+    let inputs = document.getElementsByClassName('firstInput');
+
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].style.cssText = 'display: block; margin-bottom: 15px';
+    }
+
+    let horizontalLine2 = document.createElement('hr');
+    document.body.append(horizontalLine2);
+
+    /************************************************/
+    let paragraph1 = document.createElement('p');
+    paragraph1.innerHTML = '22';
+    document.body.append(paragraph1);
+
+    let paragraph2 = document.createElement('p');
+    paragraph2.innerHTML = '15';
+    document.body.append(paragraph2);
+
+    let paragraph3 = document.createElement('p');
+    paragraph3.innerHTML = '7';
+    document.body.append(paragraph3);
+
+    let paragraphs = document.querySelectorAll('p');
+
+    for (let i = 0; i < paragraphs.length; i++) {
+        paragraphs[i].style.cssText = 'width: fit-content; cursor: pointer';
+    }
+
+    let horizontalLine3 = document.createElement('hr');
+    document.body.append(horizontalLine3);
+
+    /************************************************/
+    let input4 = document.createElement('input');
+    input4.setAttribute('data-length', '7');
+    input4.className = 'secondInput';
+    document.body.append(input4);
+
+    let input5 = document.createElement('input');
+    input5.setAttribute('data-length', '10');
+    input5.className = 'secondInput';
+    document.body.append(input5);
+
+    let input6 = document.createElement('input');
+    input6.setAttribute('data-length', '5');
+    input6.className = 'secondInput';
+    document.body.append(input6);
+
+    let inputs1 = document.getElementsByClassName('secondInput');
+
+    for (let i = 0; i < inputs1.length; i++) {
+        inputs1[i].style.cssText = 'display: block; margin-bottom: 15px';
+    }
+
+    /************************************************/
+    for (let i = 0; i < links.length; i++) {
+        links[i].addEventListener('mouseenter', function () {
+            this.innerHTML = (`${this.getAttribute('title')} (${this.getAttribute('href')})`);
+        }, {once: true})
+    }
+
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].addEventListener('focus', function () {
+            console.log((`${this.getAttribute('value')}`));
+        }, {once: true})
+    }
+
+    for (let i = 0; i < paragraphs.length; i++) {
+        paragraphs[i].addEventListener('click', function () {
+            this.innerHTML = (`Square root of ${this.innerHTML} = ${Math.sqrt(Number(this.innerHTML))}`)
+        }, {once: true})
+    }
+
+    for (let i = 0; i < inputs1.length; i++) {
+        inputs1[i].addEventListener('blur', function () {
+            if (this.value.length === Number(this.getAttribute('data-length'))) {
+                this.style.borderColor = 'green';
+            } else {
+                this.style.borderColor = 'red';
+            }
+        })
+    }
+</script>
+</body>
+</html>

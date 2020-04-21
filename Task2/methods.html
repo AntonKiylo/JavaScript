@@ -11,37 +11,32 @@
     currentSums(numbers);
 
     function currentSums(inputArray) {
-
         let result = [];
-
         let action = [];
+        let str = '';
 
-        let actionFunction = inputArray.reduce(function (prevValue, currentValue) {
-            action.push(prevValue);
-            return (`${prevValue }+${currentValue }`);
-        });
+        inputArray.reduce(function (prevValue, currentValue) {
+            str += currentValue + '+';
+            action.push(str);
+            result.push(prevValue + currentValue);
 
-        let resultFunction = inputArray.reduce(function (prevValue, currentValue) {
-            result.push(prevValue);
             return prevValue + currentValue;
-        });
+        }, 0);
 
-        result.push(resultFunction);
+        let outputAction = action.map(item => item.slice(0, -1));
 
-        action.push(actionFunction);
-
-        console.log(`[${action.toString()}] = [${result.toString()}]`);
+        console.log(`[${outputAction}] = [${result}]`);
     }
 
     /**************************************************/
 
     let phrase = 'Каждый охотник желает знать, где сидит фазан.';
 
-    firstLettersFromString(phrase.split(' '));
+    firstLettersFromString(phrase);
 
     function firstLettersFromString(inputArray) {
 
-        let arrayOfFirstLetters = inputArray.map(function (currentValue) {
+        let arrayOfFirstLetters = inputArray.split(' ').map(function (currentValue) {     //replace split() from function argument
             return currentValue.charAt(0);
         });
 
@@ -57,7 +52,7 @@
     function getPositiveIntegers(inputArray) {
 
         let filteredArray = inputArray.filter(function (currentValue) {
-            return currentValue > 0 && Number.isInteger(currentValue) === true;
+            return currentValue > 0 && Number.isInteger(currentValue);
         });
 
         console.log(`[${filteredArray.toString()}]`);

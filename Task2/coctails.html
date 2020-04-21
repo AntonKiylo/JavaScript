@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@700&display=swap" rel="stylesheet">
+    <script src="HashStorage.js"></script>
+    <title>cocktails</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            display: flex;
+            font-family: 'Cormorant Infant', serif;
+            color: dimgray;
+        }
+        button{
+            margin: 12px;
+            padding: 6px;
+            font-family: 'Cormorant Infant', serif;
+            color: dimgray;
+        }
+        h2{
+            margin-bottom: 10px;
+        }
+        hr {
+            margin: 10px 0;
+        }
+        table {
+            margin: 0 auto;
+        }
+        #buttonWrapper {
+            display: flex;
+            flex-direction: column;
+            width: 20%;
+        }
+        #output {
+            width: 80%;
+            border: 1px dashed lightgray;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 12px;
+            height: 400px;
+            overflow-y: auto;
+            background: url(../1457620017-kraft-paper-1.jpg) no-repeat center/100%;
+            text-align: center;
+            font-size: larger;
+        }
+    </style>
+</head>
+<body>
+<div id="buttonWrapper">
+    <button id='addCocktail'>Ввод рецепта</button>
+    <button id='getCocktail'>Рецепт напитка</button>
+    <button id='deleteCocktail'>Удаление рецепта</button>
+    <button id='cocktailsList'>Перечень всех коктейлей</button>
+</div>
+<div id="output"></div>
+<script>
+    let cocktailsStorage = new HashStorage;
+
+    cocktailsStorage.store['Маргарита'] = {
+        alcohol: 'да',
+        ingredients: ['Водка Finlandia 50мл', 'Кофейный ликер 25мл', 'Лед в кубиках 120 г'],
+        howToMake: 'Наполни стакан кубиками льда доверху, затем налей кофейный ликер 25 мл, водку 50 мл и размешай коктейльной ложкой.'
+    }
+
+    cocktailsStorage.store['Пеликан'] = {
+        alcohol: 'нет',
+        ingredients: ['Гренадин Monin 10мл', 'Клубничный сироп Monin 10мл', 'Персиковый сок 150мл', 'Лимонный сок 15мл, Банан 110г', 'Клубника 50г', 'Дробленый лед 60г'],
+        howToMake: 'Положи в блендер очищенную и нарезанную половинку банана и клубнику 2 ягоды. Налей лимонный сок 15 мл, гренадин 10 мл, клубничный сироп 10 мл и персиковый сок 150 мл. Добавь в блендер совок дробленого льда и взбей. Перелей в хайбол. Укрась кружком банана и половинкой клубники на коктейльной шпажке.'
+    }
+
+    cocktailsStorage.store['Олд фешен'] = {
+        alcohol: 'да',
+        ingredients: ['Бурбон 50мл', 'Ангостура биттер 1мл', 'Апельсин 40г', 'Тростниковый сахар в кубиках 5г', 'Коктейльная вишня красная 5г', 'Лед в кубиках 120г'],
+        howToMake: 'Положи в рокс дольку апельсина и коктейльную вишню добавь кубик тростникового сахара, пропитанный ангостурой биттером 1 дэш, и подави мадлером, наполни рокс кубиками льда, найлей бурбон 50 мл и аккуратно размешай коктейльной ложкой.'
+    }
+
+    cocktailsStorage.store['Мохито'] = {
+        alcohol: 'да',
+        ingredients: ['Белый ром 50мл', 'Сахарный сироп 15мл', 'Содовая 100мл', 'Лайм 80г', 'Мята3г', 'Дробленый лед 200г'],
+        howToMake: 'Положи в хайбол лайм 3 дольки и подави мадлером. Возьми мяту 10 листиков в одну руку и хлопни по ним другой рукой. Положи мяту в хайбол. Наполни бокал дробленым льдом доверху. Добавь сахарный сироп 15 мл и белый ром 50 мл. Долей содовую доверху и аккуратно размешай коктейльной ложкой. Досыпь немного дробленого льда. Укрась веточкой мяты и долькой лайма'
+    }
+
+    /*****************************************************/
+
+    let addButton = document.getElementById('addCocktail');
+    addButton.onclick = function () {
+        let inputName = prompt('Введите название напитка:');
+        while ((inputName === null) || (inputName.length <= 1) || inputName.match(/^[?!,.\d\s]+$/)) {
+            inputName = prompt("Введите название напитка корректно!");
+        }
+        let name = inputName.charAt(0).toUpperCase() + inputName.slice(1);
+
+        let alcohol = confirm('Напиток алкогольный?');
+        alcohol ? alcohol = 'да' : alcohol = 'нет';
+
+        let inputIngredients = prompt('Перечислите через запятую ингредиенты и их пропорции:');
+        while ((inputIngredients === null) || (inputIngredients.length <= 1) || inputIngredients.match(/^[?!,.\d\s]+$/)) {
+            inputIngredients = prompt("Введите ингредиенты напитка корректно!");
+        }
+        let ingredients = inputIngredients.split(',');
+
+        let howToMake = prompt('Введите рецепт приготовления:');
+        while ((howToMake === null) || (howToMake.length <= 1) || howToMake.match(/^[?!,.\d\s]+$/)) {
+            howToMake = prompt("Введите рецепт приготовления напитка корректно!");
+        }
+
+        cocktailsStorage.addValue(name, {alcohol, ingredients, howToMake});
+    };
+
+    /*****************************************************/
+
+    let recipeButton = document.getElementById('getCocktail');
+    recipeButton.onclick = function () {
+        let cocktailName = prompt('Рецепт какого напитка Вы хотите узнать?');
+
+        if (cocktailName === null) {
+            return false;
+        } else if (cocktailName.trim() === '') {
+            alert('Вы ввели пустую строку');
+            return false;
+        } else if (!(cocktailName in cocktailsStorage.store)) {
+            alert('Такого напитка нет в списке');
+            return false;
+        }
+
+        let table = `<table><tbody><th>Необходимые ингредиенты:</th>`
+        cocktailsStorage.getValue(cocktailName).ingredients.forEach(function (item, index) {
+            table += `<tr><td>${index + 1}. ${item}</td></tr>`;
+        })
+        table += `</tbody></table>`;
+        let howToMake = cocktailsStorage.getValue(cocktailName).howToMake;
+        let isAlcohol = cocktailsStorage.getValue(cocktailName).alcohol;
+
+        document.querySelector('#output').innerHTML = `<h2>Коктейль ${cocktailName} (алкогольный: ${isAlcohol})</h2>${table}<hr><p>${howToMake}</p>`;
+    }
+
+    /*****************************************************/
+
+    let deleteButton = document.getElementById('deleteCocktail');
+    deleteButton.onclick = function () {
+        let key = prompt('Какой напиток Вы хотите удалить?');
+
+        if (key === null) {
+            return false;
+        } else if (key.trim() === '') {
+            alert('Вы ввели пустую строку');
+            return false;
+        } else if (!(key in cocktailsStorage.store)) {
+            alert('Такого напитка нет в списке');
+        } else {
+            alert('Напиток удален из списка');
+        }
+
+        cocktailsStorage.deleteValue(key);
+
+        document.querySelector('#output').innerHTML = cocktailsStorage.getKeys().join('<br><br>');
+    };
+
+    /*****************************************************/
+
+    let listButton = document.getElementById('cocktailsList');
+    listButton.onclick = function () {
+        document.querySelector('#output').innerHTML = cocktailsStorage.getKeys().join('<br><br>');
+    };
+</script>
+</body>
+</html>
