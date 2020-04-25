@@ -3,9 +3,6 @@ function HashStorage() {
     this.store = {};            // хранилище для значений
 }
 
-//добавляю методы класса в прототипы, что б для каждого
-//экземпляра не создавался свой метод и экономилать память
-
 HashStorage.prototype.addValue = function (key, value) {
     this.store[key] = value;             //сохраняет указанное значение под указанным ключом;
 };
