@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>clock-canvas</title>
+</head>
+<body>
+<canvas id='canvas' width="400" height="400"></canvas>
+<script>
+
+    createClock()
+
+    function createClock() {
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let clockSize = canvas.getAttribute('width');
+        let date = new Date();
+        let seconds = date.getSeconds();
+        let minutes = date.getMinutes();
+        let hours = date.getHours();
+
+        // ctx.clearRect(0,0,400,400);
+
+        ctx.beginPath();
+        ctx.arc(clockSize/2, clockSize/2, clockSize/2, 0, 2 * Math.PI);
+        ctx.fillStyle = '#e1e1e1';
+        ctx.fill();
+        ctx.closePath();
+
+        for (let i = 1; i <= 12; i++) {
+            let x = clockSize/2 - (clockSize/2.5) * Math.sin(Math.PI * i / -6);
+            let y = clockSize/2 - (clockSize/2.5) * Math.cos(Math.PI * i / -6);
+
+            ctx.beginPath();
+            ctx.arc(x, y, clockSize/15, 0, 2 * Math.PI);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.font=`normal ${clockSize/20}px Arial`;
+            ctx.textAlign ='center';
+            ctx.textBaseline='middle';
+            ctx.fillStyle = 'black';
+            ctx.fillText(i, x, y);
+            ctx.closePath();
+        }
+
+        ctx.beginPath();
+        ctx.fillText(`${(hours < 10 ? '0' : '') + hours}:${(minutes < 10 ? '0' : '') + minutes}:${(seconds < 10 ? '0' : '') + seconds}`, clockSize / 2, (clockSize / 2) / 1.5);
+        ctx.closePath();
+
+        let hourAngle = ((Math.PI * 2) * ((hours * 5 + (minutes / 60) * 5) / 60)) - ((Math.PI * 2) / 4);
+        ctx.beginPath();
+        ctx.moveTo(clockSize / 2, clockSize / 2);
+        ctx.lineTo((clockSize / 2 + Math.cos(hourAngle) * clockSize / 3), clockSize / 2 + Math.sin(hourAngle) * clockSize / 3);
+        ctx.lineWidth = clockSize / 120;
+        ctx.strokeStyle = 'grey';
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        ctx.closePath();
+
+        let minAngle = ((Math.PI * 2) * (minutes / 60)) - ((Math.PI * 2) / 4);
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, canvas.height / 2);
+        ctx.lineTo((clockSize / 2 + Math.cos(minAngle) * clockSize / 2.5), clockSize / 2 + Math.sin(minAngle) * clockSize / 2.5);
+        ctx.lineWidth = clockSize / 120;
+        ctx.strokeStyle = 'grey';
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        ctx.closePath();
+
+        let secAngle = ((Math.PI * 2) * (seconds / 60)) - ((Math.PI * 2) / 4);
+        ctx.beginPath();
+        ctx.moveTo(clockSize / 2, clockSize / 2);
+        ctx.lineTo((clockSize / 2 + Math.cos(secAngle) * clockSize / 2.5), clockSize / 2 + Math.sin(secAngle) * clockSize / 2.5);
+        ctx.strokeStyle = 'red';
+        ctx.lineCap = 'round';
+        ctx.lineWidth = clockSize / 200;
+        ctx.stroke();
+        ctx.closePath();
+
+        setTimeout(createClock, 1000);
+    }
+
+</script>
+</body>
+</html>

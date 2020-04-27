@@ -20,25 +20,26 @@
         let svgWidth = svg.getAttributeNS(null, 'width');
         let svgHeight = svg.getAttributeNS(null, 'height');
 
-        let clockDisc = document.createElementNS(svgNS, 'circle');
+        /***********************************/
 
+        let clockDisc = document.createElementNS(svgNS, 'circle');
         clockDisc.setAttributeNS(null, 'cx', svgWidth / 2);
         clockDisc.setAttributeNS(null, 'cy', svgHeight / 2);
         clockDisc.setAttributeNS(null, 'r', svgHeight / 2);
         clockDisc.setAttributeNS(null, 'fill', '#e1e1e1');
         clockDisc.setAttributeNS(null, 'id', 'clockDisc');
-
         svg.appendChild(clockDisc);
 
         /***********************************/
 
-        let digit = document.createElementNS(svgNS, 'text');
-        digit.setAttributeNS(null, 'x', svgWidth / 2);
-        digit.setAttributeNS(null, 'y', (svgHeight / 2) / 1.5);
-        digit.setAttributeNS(null, 'font-family', 'sans-serif');
-        digit.setAttributeNS(null, 'text-anchor', 'middle');
-        digit.setAttributeNS(null, 'font-size', clockSize/15);
-        digit.setAttributeNS(null, 'id', 'digit');
+        let digitalClock = document.createElementNS(svgNS, 'text');
+        digitalClock.setAttributeNS(null, 'x', svgWidth / 2);
+        digitalClock.setAttributeNS(null, 'y', (svgHeight / 2) / 1.5);
+        digitalClock.setAttributeNS(null, 'font-family', 'sans-serif');
+        digitalClock.setAttributeNS(null, 'text-anchor', 'middle');
+        digitalClock.setAttributeNS(null, 'font-size', clockSize/15);
+        digitalClock.setAttributeNS(null, 'id', 'digit');
+        svg.appendChild(digitalClock);
 
         /***********************************/
 
@@ -49,6 +50,7 @@
             smallCircles.setAttributeNS(null, 'r', clockSize/15);
             smallCircles.setAttributeNS(null, 'fill', '#fff');
             smallCircles.setAttributeNS(null, 'class', 'smallCircles');
+            svg.appendChild(smallCircles);
 
             let numbers = document.createElementNS(svgNS, 'text');
             numbers.setAttributeNS(null, 'x', 0);
@@ -59,15 +61,12 @@
             numbers.setAttributeNS(null, 'dominant-baseline', 'middle')
             numbers.setAttributeNS(null, 'class', 'numbers');
             numbers.innerHTML = i;
-
-            svg.appendChild(smallCircles);
             svg.appendChild(numbers);
         }
 
         /***********************************/
 
         let hourHand = document.createElementNS(svgNS, 'line');
-
         hourHand.setAttributeNS(null, 'x1', svgWidth / 2);
         hourHand.setAttributeNS(null, 'x2', svgHeight / 2);
         hourHand.setAttributeNS(null, 'y1', svgWidth / 2);
@@ -76,9 +75,9 @@
         hourHand.setAttributeNS(null, 'stroke-width', 3);
         hourHand.setAttributeNS(null, 'transform-origin', '50%');
         hourHand.setAttributeNS(null, 'id', 'hourHand');
+        svg.appendChild(hourHand);
 
         let minHand = document.createElementNS(svgNS, 'line');
-
         minHand.setAttributeNS(null, 'x1', svgWidth / 2);
         minHand.setAttributeNS(null, 'x2', svgHeight / 2);
         minHand.setAttributeNS(null, 'y1', svgWidth / 2);
@@ -87,9 +86,9 @@
         minHand.setAttributeNS(null, 'stroke-width', 3);
         minHand.setAttributeNS(null, 'transform-origin', '50%');
         minHand.setAttributeNS(null, 'id', 'minHand');
+        svg.appendChild(minHand);
 
         let secHand = document.createElementNS(svgNS, 'line');
-
         secHand.setAttributeNS(null, 'x1', svgWidth / 2);
         secHand.setAttributeNS(null, 'x2', svgHeight / 2);
         secHand.setAttributeNS(null, 'y1', svgWidth / 2);
@@ -98,19 +97,16 @@
         secHand.setAttributeNS(null, 'stroke-width', 2);
         secHand.setAttributeNS(null, 'transform-origin', '50%');
         secHand.setAttributeNS(null, 'id', 'secHand');
-
-        svg.appendChild(digit)
-        svg.appendChild(hourHand);
-        svg.appendChild(minHand);
         svg.appendChild(secHand);
     }
 
     createClock(clockSize);
 
+    /***********************************/
+
     let smallCircles = document.querySelectorAll('.smallCircles');
     let clockDisc = document.getElementById('clockDisc');
     let numbers = document.querySelectorAll('.numbers');
-
 
     let radius = document.getElementById('svg').getAttributeNS(null, 'width')/2.5;          //расстояние от центра часов до расположения цифр
     let angle = 0;              //смещение цифр на часах
@@ -132,6 +128,8 @@
         numbers[c].setAttributeNS(null, 'y', `${smallCircles[c].getAttributeNS(null, 'cy')}`);     //распологаем цифры на часах(отступ сверху относительно часов)
     }
 
+    /***********************************/
+
     function moveClockHands() {
         let date = new Date();
         let seconds = date.getSeconds();
@@ -146,8 +144,7 @@
         minHand.style.transform = `rotate(${minAngle}deg)`;
         hourHand.style.transform = `rotate(${hourAngle}deg)`;
 
-        let dig = document.getElementById('digit');
-        dig.innerHTML = `${hours}:${(minutes<10?'0':'') + minutes}:${(seconds<10?'0':'') + seconds}`
+        document.getElementById('digit').innerHTML = `${hours}:${(minutes < 10 ? '0' : '') + minutes}:${(seconds < 10 ? '0' : '') + seconds}`;
 
         setTimeout(moveClockHands, 1000)  //поместив в рекурсию избегаем задержки при загрузке страницы
     }
