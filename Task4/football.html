@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>football</title>
+    <style>
+        #wrapper{
+            width: 820px;
+            height: 767px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .field{
+            position: relative;
+            width: 800px;
+            height: 533px;
+            border: 10px double #fff;
+            border-radius: 12px;
+            box-shadow: 5px 5px 19px 0 rgba(0,0,0,0.75);
+            background: url('../assets/football_field.jpg');
+        }
+        #blueWrapper{
+            width: 82px;
+            border: 1px solid white;
+            border-radius: 12px;
+            box-shadow: 5px 5px 19px 0 rgba(0,0,0,0.75);
+            height: 176px;
+            margin: 26px 0 0 18px;
+        }
+        #yellowWrapper{
+            width: 82px;
+            border: 1px solid white;
+            border-radius: 12px;
+            box-shadow: 5px 5px 19px 0 rgba(0,0,0,0.75);
+            height: 176px;
+            margin: 26px 0 0 28px;
+        }
+        .ball{
+            width: 60px;
+            height: 60px;
+            background: url('../assets/football_ball.png');
+            position: absolute;
+            top: 605px;
+            left: 288px;
+            background-size: cover;
+        }
+        .bluePlayer{
+            background: url('../assets/football_blue.png');
+            width: 54px;
+            height: 150px;
+            position: absolute;
+            top: 605px;
+            left: 42px;
+            background-size: cover;
+        }
+        .yellowPlayer{
+            background: url('../assets/football_yellow.png');
+            width: 54px;
+            height: 150px;
+            position: absolute;
+            top: 605px;
+            left: 155px;
+            background-size: cover;
+        }
+        .draggable{
+            cursor: pointer;
+        }
+        .hide{
+            display: none;
+        }
+        .hovered{
+            border-color: #77d42a;
+        }
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <div class="field"></div>
+    <div id="blueWrapper">
+        <div class="bluePlayer draggable" draggable="true"></div>
+        <div class="bluePlayer draggable" draggable="true"></div>
+        <div class="bluePlayer draggable" draggable="true"></div>
+    </div>
+    <div id="yellowWrapper">
+        <div class="yellowPlayer draggable" draggable="true"></div>
+        <div class="yellowPlayer draggable" draggable="true"></div>
+        <div class="yellowPlayer draggable" draggable="true"></div>
+    </div>
+    <div class="ball draggable" draggable="true"></div>
+</div>
+
+<script>
+    document.getElementById('wrapper').addEventListener('mousedown', function (event) {
+        let draggable = event.target;
+        let field = document.querySelector('.field');
+        let field2 = document.querySelector('#yellowWrapper');
+
+        let shiftX = event.clientX - draggable.getBoundingClientRect().left;
+        let shiftY = event.clientY - draggable.getBoundingClientRect().top;
+
+
+        if (!draggable.classList.contains('draggable')) {
+            event.preventDefault();
+        }
+
+        draggable.addEventListener('dragstart', () => {
+            setTimeout(() => {
+                draggable.classList.add('hide');
+            }, 0);
+        });
+
+        draggable.addEventListener('dragend', () => {
+            draggable.classList.remove('hide');
+        });
+
+        field.addEventListener('dragover', (event) => {
+            event.preventDefault();
+        });
+        field.addEventListener('dragenter', (event) => {
+            event.preventDefault();
+            field.classList.add('hovered');
+        });
+        field.addEventListener('dragleave', () => {
+            field.classList.remove('hovered');
+        });
+
+        function drop(event) {
+            field.appendChild(draggable);
+
+            draggable.style.left = event.pageX - shiftX - 18 + 'px';
+            draggable.style.top = event.pageY - shiftY - 18 + 'px';
+
+            field.removeEventListener('drop', drop);
+            field.classList.remove('hovered');
+
+        }
+
+        field.addEventListener('drop', drop);
+
+    })
+
+/*    document.getElementById('wrapper').addEventListener('mousedown', function (event) {
+        let draggable = event.target;
+        let field = document.querySelector('.field');
+
+        let shiftX = event.clientX - draggable.getBoundingClientRect().left;
+        let shiftY = event.clientY - draggable.getBoundingClientRect().top;
+
+
+        if (!draggable.classList.contains('draggable')) {
+            event.preventDefault();
+        }
+
+        draggable.addEventListener('dragstart', () => {
+            setTimeout(() => {
+                draggable.classList.add('hide');
+            }, 0);
+        });
+
+        draggable.addEventListener('dragend', () => {
+            draggable.classList.remove('hide');
+        });
+
+        field.addEventListener('dragover', (event) => {
+            event.preventDefault();
+        });
+        field.addEventListener('dragenter', (event) => {
+            event.preventDefault();
+            field.classList.add('hovered');
+        });
+        field.addEventListener('dragleave', () => {
+            field.classList.remove('hovered');
+        });
+
+        function drop(event) {
+            field.appendChild(draggable);
+
+            draggable.style.left = event.pageX - shiftX - 18 + 'px';
+            draggable.style.top = event.pageY - shiftY - 18 + 'px';
+
+            field.removeEventListener('drop', drop);
+            field.classList.remove('hovered');
+
+        }
+
+        field.addEventListener('drop', drop);
+
+    })*/
+</script>
+</body>
+</html>

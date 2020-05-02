@@ -67,80 +67,80 @@
 </head>
 <body>
 <script>
-    document.body.append(document.createElement('header'));
+    document.body.append(document.createElement('header'));  //создаем header
     let output = document.createElement('div');
     output.id = 'output';
     document.body.append(output);
 
-    let monthLabel = document.createElement('label');
+    let monthLabel = document.createElement('label');  //создаем label для месяца
     monthLabel.setAttribute('for', 'month');
     monthLabel.innerHTML = 'Select month';
     document.querySelector('header').append(monthLabel);
 
-    let selectMonth = document.createElement('select');
+    let selectMonth = document.createElement('select');   //создаем select для месяца
     selectMonth.id = 'month';
+    selectMonth.innerHTML = '<option>Select month</option>'
     document.querySelector('header').append(selectMonth);
-    let monthList = ['Выбрать месяц', 'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-    for (let i = 0; i < monthList.length; i++) {
-        selectMonth.options[i] = new Option(monthList[i], i);
+    let monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'Jule', 'August', 'September', 'October', 'November', 'December'];
+    for (let i = 0; i < monthNames.length; i++) {
+        let option = document.createElement('option');
+        option.innerHTML = monthNames[i];
+        selectMonth.append(option);
     }
 
-    let yearLabel = document.createElement('label');
+    let yearLabel = document.createElement('label');        //создаем label для года
     yearLabel.setAttribute('for', 'year');
     yearLabel.innerHTML = 'Select year';
     document.querySelector('header').append(yearLabel);
 
-    let selectYear = document.createElement('select');
+    let selectYear = document.createElement('select');      //создаем select для года
     selectYear.id = 'year';
+    selectYear.innerHTML = '<option>Select year</option>';
     document.querySelector('header').append(selectYear);
-    let yearList = ['Выбрать год',
-        1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989,
-        1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-        2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
-        2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020];
-    for (let j = 0; j < yearList.length; j++) {
-        selectYear.options[j] = new Option(yearList[j], j);
+    for (let j = 1980; j < 2050; j++) {
+        let option = document.createElement('option');
+        option.innerHTML = j;
+        selectYear.append(option);
     }
 
-    let addButton = document.createElement('button');
+    let addButton = document.createElement('button');       //создаем кнопку добавления календаря
     addButton.id = 'addbutton';
     addButton.setAttribute('disabled', 'disabled');
     addButton.innerHTML = 'Создать календарь';
     document.querySelector('header').append(addButton);
 
-    let removeButton = document.createElement('button');
+    let removeButton = document.createElement('button');        //создаем кнопку удаления календаря
     removeButton.id = 'removebutton';
     removeButton.setAttribute('disabled', 'disabled');
     removeButton.innerHTML = 'Удалить календарь';
     document.querySelector('header').append(removeButton);
 
-    function checkValue() {
-        if (selectMonth.value === '0' || selectYear.value === '0') {
+    function checkValue() {         //создаем функцию проверки значения в select, что бы сделать кнопку активной/не активной
+        if (selectMonth.value === 'Select month' || selectYear.value === 'Select year') {
             addButton.setAttribute('disabled', 'disabled');
         } else {
             addButton.removeAttribute('disabled');
         }
     }
-    selectYear.onchange = checkValue;
-    selectMonth.onchange = checkValue;
+    selectYear.onchange = checkValue;       //вешаем listener на событие
+    selectMonth.onchange = checkValue;      //вешаем listener на событие
 
-    addButton.addEventListener('click', function () {
+    addButton.addEventListener('click', function () {       //создаем календарь при клике
         let month = selectMonth.selectedIndex;
         let year = selectYear.options[selectYear.selectedIndex].text;
         createCalendar(month, year);
         removeButton.removeAttribute('disabled');
     })
 
-    removeButton.addEventListener('click', function () {
+    removeButton.addEventListener('click', function () {        //удаляем календарь при клике
         output.removeChild(output.childNodes[0]);
         if (output.innerHTML === '') {
             this.setAttribute('disabled', 'disabled');
         }
     })
 
-    function createCalendar(inputMonth, inputYear) {
-        let monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-            currentMonth = inputMonth - 1,
+    function createCalendar(inputMonth, inputYear) {        //функция создания календаря
+            let currentMonth = inputMonth - 1,
             currentDate = new Date(inputYear, currentMonth),
             table = `<div id="calendarTitle"><button onclick="decrementYear()"><<</button><button onclick="decrementMonth()"><</button><div style="width: 170px; text-align: center">${monthNames[currentMonth]} / ${currentDate.getFullYear()} года</div><button onclick="incrementMonth()">></button><button onclick="incrementYear()">>></button></div><table><tbody><tr><th>mon</th><th>tue</th><th>wed</th><th>thu</th><th>fri</th><th>sat</th><th>sun</th></tr><tr>`;
 
@@ -196,7 +196,7 @@
         }
     }
 
-    function dayOfWeek(currentDate) {
+    function dayOfWeek(currentDate) {       //функция определения дня начала недели
         let day = currentDate.getDay();
         if (day === 0) {
             day = 7;

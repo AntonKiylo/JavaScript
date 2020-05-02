@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>sortable list</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        ul {
+            list-style: none;
+            margin: 20px;
+            border: 1px solid lightblue;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .draggableElement {
+            text-align: center;
+            padding: 6px;
+            margin: 8px;
+            border: 1px solid lightblue;
+            border-radius: 8px;
+            width: 260px;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .hide {
+            background-color: lightgray;
+            color: transparent;
+        }
+
+        .border {
+            border-color: #77d42a;
+        }
+    </style>
+</head>
+<body>
+<ul>
+    <li id="5" class="draggableElement" draggable="true">E</li>
+    <li id="4" class="draggableElement" draggable="true">D</li>
+    <li id="1" class="draggableElement" draggable="true">A</li>
+    <li id="2" class="draggableElement" draggable="true">B</li>
+    <li id="3" class="draggableElement" draggable="true">C</li>
+</ul>
+<script>
+    let droppable = document.querySelector('ul');
+
+    droppable.addEventListener('dragstart', event => {
+        let target = event.target;
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData("text", event.target.id);
+        setTimeout(() => {
+            target.classList.add('hide');
+        }, 0);
+    });
+
+    droppable.addEventListener('dragend', event => {
+        event.preventDefault();
+        let target = event.target;
+        target.classList.remove('hide');
+    });
+
+    droppable.addEventListener('dragover', event => {
+        event.preventDefault();
+    });
+
+    droppable.addEventListener('dragenter', event => {
+        event.preventDefault();
+        let target = event.target;
+        if (target.tagName !== 'LI') {
+            return;
+        }
+        let draggable = document.querySelectorAll('li');                //!
+        draggable.forEach(curr => curr.classList.remove('hide'));       //!
+        target.classList.add('hide');                                   //!
+
+    });
+
+    droppable.addEventListener('dragleave', event => {
+        // let target = event.target;
+        // target.classList.remove('hide');
+        event.preventDefault();
+    });
+
+    droppable.addEventListener('drop', event => {
+        let target = event.target;
+        if (target.tagName !== 'LI') {
+            return;
+        }
+        let id = document.getElementById(event.dataTransfer.getData('text'));
+        if (target.tagName !== 'LI' || target === id) {
+            return;
+        }
+        // target.classList.remove('hide');
+        droppable.replaceChild(target.cloneNode(true), id);
+        droppable.replaceChild(id, target)
+        // id.classList.remove('hide');
+
+        let draggable = document.querySelectorAll('li');
+
+        let list = [];
+        draggable.forEach(curr => {
+            list.push(curr.innerHTML);
+            curr.classList.remove('hide');
+        });
+
+        if (list.join('') === list.sort().join('')) {
+            draggable.forEach(curr => curr.classList.add('border'));
+            droppable.style.boxShadow = '0 0 10px -2px rgba(0,255,13,1)';
+        } else {
+            draggable.forEach(curr => curr.classList.remove('border'));
+            droppable.style.boxShadow = 'none';
+        }
+    })
+</script>
+</body>
+</html>
