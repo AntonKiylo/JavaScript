@@ -52,7 +52,7 @@
 
     droppable.addEventListener('dragstart', event => {
         let target = event.target;
-        event.dataTransfer.effectAllowed = 'move';
+        //event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData("text", event.target.id);
         setTimeout(() => {
             target.classList.add('hide');

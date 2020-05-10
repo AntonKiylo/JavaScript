@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ping-pong_dom</title>
+</head>
+<body>
+<script>
+    //создаем wrapper для кнопки и счетчика
+    let header = document.createElement('div');
+    header.style.cssText = 'display: flex; margin: 20px';
+    document.body.append(header);
+
+    //создаем кнопку start
+    let start = document.createElement('button');
+    start.innerHTML = 'START';
+    header.append(start);
+
+    //создаем счетчик
+    let counter = document.createElement('div');
+    counter.style.cssText= 'margin-left: 300px'
+    counter.innerHTML = '<span id="leftPlayerCount">0</span> : <span id="rightPlayerCount">0</span>';
+    header.append(counter);
+
+    //создаем поле для игры
+    let field = document.createElement('div');
+    field.setAttribute('id', 'field');
+    field.style.cssText = 'width: 800px; height: 500px; background-color: yellow; position: relative';
+    document.body.append(field);
+
+    //создаем левую ракетку
+    let leftRocket = document.createElement('div');
+    leftRocket.setAttribute('id', 'leftRocket');
+    leftRocket.style.cssText = 'width: 16px; height: 120px; background-color: green; position: absolute';
+    field.append(leftRocket);
+
+    //создаем правую ракетку
+    let rightRocket = document.createElement('div');
+    rightRocket.setAttribute('id', 'rightRocket');
+    rightRocket.style.cssText = 'width: 16px; height: 120px; background-color: blue; position: absolute; left: 784px';
+    field.append(rightRocket);
+
+    //создаем мяч
+    let ball = document.createElement('div');
+    ball.setAttribute('id', 'ball');
+    ball.style.cssText = 'width: 30px; height: 30px; background-color: red; position: absolute; border-radius: 50%';
+    field.append(ball);
+
+    /************************************/
+
+    //создаем хэш для хранения свойств и метода мяча
+    let ballH = {
+        posX: 390,
+        posY: 230,
+        speedX: 6,
+        speedY: 2,
+        width: 30,
+        height: 30,
+        updateBallCoordinates() {
+            ball.style.left = this.posX + 'px';
+            ball.style.top = this.posY + 'px';
+        }
+    }
+
+    //создаем хэш для хранения свойств поля
+    let fieldH = {
+        width: 800,
+        height: 500,
+    }
+
+    //создаем хэш для хранения свойств и метода правой ракетки
+    let rightRocketH = {
+        posY: 340,
+        height: 120,
+        speedY: 20,
+        updateRightRocketCoordinates() {
+            rightRocket.style.top = this.posY + 'px';
+        }
+    }
+
+    //создаем хэш для хранения свойств и метода левой ракетки
+    let leftRocketH = {
+        posY: 340,
+        height: 120,
+        speedY: 20,
+        updateLeftRocketCoordinates() {
+            leftRocket.style.top = this.posY + 'px';
+        }
+    }
+
+    //вешаем событие keydown на document для управления ракетками
+    document.addEventListener('keydown', function (event) {
+        //если нажата 'стрелка вверх'
+        if (event.key === 'ArrowUp') {
+            rightRocketH.posY -= rightRocketH.speedY;
+            //проверяем выходит ли ракетка за пределы верхней части поля
+            if (rightRocketH.posY < 0) {
+                rightRocketH.posY = 0;
+            }
+        }
+
+        //если нажата 'стрелка вниз'
+        if (event.key === 'ArrowDown') {
+            rightRocketH.posY += rightRocketH.speedY;
+            //проверяем выходит ли ракетка за пределы нижней части поля
+            if (rightRocketH.posY + rightRocketH.height > fieldH.height) {
+                rightRocketH.posY = fieldH.height - rightRocketH.height;
+            }
+        }
+
+        //если нажата 'W'
+        if (event.code === 'KeyW') {
+            leftRocketH.posY -= leftRocketH.speedY;
+            //проверяем выходит ли ракетка за пределы верхней части поля
+            if (leftRocketH.posY < 0) {
+                leftRocketH.posY = 0;
+            }
+        }
+
+        ////если нажата 'S'
+        if (event.code === 'KeyS') {
+            leftRocketH.posY += leftRocketH.speedY;
+            //проверяем выходит ли ракетка за пределы нижней части поля
+            if (leftRocketH.posY + leftRocketH.height > fieldH.height) {
+                leftRocketH.posY = fieldH.height - leftRocketH.height;
+            }
+        }
+
+        leftRocketH.updateLeftRocketCoordinates();
+        rightRocketH.updateRightRocketCoordinates();
+    })
+
+    //запуск плавной анимации
+    start.onclick = function() {
+        requestAnimationFrame(tick);
+    }
+
+    function tick() {
+        start.disabled = true;
+
+        let leftPlayerCount = document.getElementById('leftPlayerCount');
+        let rightPlayerCount = document.getElementById('rightPlayerCount');
+
+        ballH.posX += ballH.speedX;
+        // дотронулся ли мяч правой стены?
+        if (ballH.posX + ballH.width > fieldH.width) {
+            leftPlayerCount.innerHTML++;
+            ballH.posX = 390;
+            ballH.posY = 230;
+            alert(`${leftPlayerCount.innerHTML} : ${rightPlayerCount.innerHTML}`);
+        }
+
+        // дотронулся ли мяч левой стены?
+        if (ballH.posX < 0) {
+            ++rightPlayerCount.innerHTML;
+            ballH.posX = 390;
+            ballH.posY = 230;
+            alert(`${leftPlayerCount.innerHTML} : ${rightPlayerCount.innerHTML}`);
+        }
+
+        ballH.posY += ballH.speedY;
+        // вылетел ли мяч ниже пола?
+        if (ballH.posY + ballH.height > fieldH.height) {
+            ballH.speedY =- ballH.speedY;
+            ballH.posY = fieldH.height - ballH.height;
+        }
+        // вылетел ли мяч выше потолка?
+        if (ballH.posY < 0) {
+            ballH.speedY =- ballH.speedY;
+            ballH.posY = 0;
+        }
+
+        ballH.updateBallCoordinates();
+        requestAnimationFrame(tick);
+    }
+
+    leftRocketH.updateLeftRocketCoordinates();
+    rightRocketH.updateRightRocketCoordinates();
+    ballH.updateBallCoordinates();
+
+    /*let timer; // пока пустая переменная
+    let x =10; // стартовое значение обратного отсчета
+    countdown(); // вызов функции
+    function countdown(){  // функция обратного отсчета
+        document.getElementById('rocket').innerHTML = x;
+        x--; // уменьшаем число на единицу
+        if (x<0){
+            clearTimeout(timer); // таймер остановится на нуле
+
+        }
+        else {
+            timer = setTimeout(countdown, 1000);
+        }
+    }*/
+</script>
+</body>
+</html>

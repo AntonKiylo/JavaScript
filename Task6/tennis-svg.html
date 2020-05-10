@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tennis-svg</title>
+</head>
+<body>
+<script>
+    //создаем wrapper для кнопки и счетчика
+    let header = document.createElement('div');
+    header.style.cssText = 'display: flex; margin: 20px';
+    document.body.append(header);
+
+    //создаем кнопку start
+    let start = document.createElement('button');
+    start.innerHTML = 'START';
+    header.append(start);
+
+    //создаем счетчик
+    let counter = document.createElement('div');
+    counter.style.cssText= 'margin-left: 300px'
+    counter.innerHTML = '<span id="leftPlayerCount">0</span> : <span id="rightPlayerCount">0</span>';
+    header.append(counter);
+
+    const svgNS = 'http://www.w3.org/2000/svg';
+
+    //создаем svg
+    let svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttributeNS(null, 'width', '800px');
+    svg.setAttributeNS(null, 'height', '500px');
+    svg.setAttributeNS(null, 'id', 'svg');
+    document.body.appendChild(svg);
+
+    //создаем поле для игры
+    let field = document.createElementNS(svgNS, 'rect');
+    field.setAttributeNS(null, 'id', 'field');
+    field.setAttributeNS(null, 'x', '0');
+    field.setAttributeNS(null, 'y', '0');
+    field.setAttributeNS(null, 'width', '800');
+    field.setAttributeNS(null, 'height', '500');
+    field.setAttributeNS(null, 'fill', 'yellow');
+    svg.appendChild(field);
+
+    //создаем левую ракетку
+    let leftRocket = document.createElementNS(svgNS, 'rect');
+    leftRocket.setAttributeNS(null, 'id', 'leftRocket');
+    leftRocket.setAttributeNS(null, 'x', '0');
+    leftRocket.setAttributeNS(null, 'width', '16');
+    leftRocket.setAttributeNS(null, 'height', '120');
+    leftRocket.setAttributeNS(null, 'fill', 'blue');
+    svg.appendChild(leftRocket);
+
+    //создаем правую ракетку
+    let rightRocket = document.createElementNS(svgNS, 'rect');
+    rightRocket.setAttributeNS(null, 'id', 'rightRocket');
+    rightRocket.setAttributeNS(null, 'x', '784');
+    rightRocket.setAttributeNS(null, 'width', '16');
+    rightRocket.setAttributeNS(null, 'height', '120');
+    rightRocket.setAttributeNS(null, 'fill', 'green');
+    svg.appendChild(rightRocket);
+
+    //создаем мяч
+    let ball = document.createElementNS(svgNS, 'circle');
+    ball.setAttributeNS(null, 'r', '15');
+    ball.setAttributeNS(null, 'fill', 'red');
+    ball.setAttributeNS(null, 'id', 'ball');
+    svg.appendChild(ball);
+
+    /************************************/
+
+    //создаем хэш для хранения свойств и метода мяча
+    let ballH = {
+        posX: 400,
+        posY: 250,
+        radius: 15,
+        speedX: 6,
+        speedY: 4,
+        updateBallCoordinates() {
+            ball.setAttributeNS(null, 'cx', this.posX);
+            ball.setAttributeNS(null, 'cy', this.posY);
+        }
+    }
+
+    //создаем хэш для хранения свойств поля
+    let fieldH = {
+        width: 800,
+        height: 500,
+    }
+
+    //создаем хэш для хранения свойств и метода правой ракетки
+    let rightRocketH = {
+        posY: 200,
+        height: 120,
+        width: 16,
+        speedY: 20,
+        updateRightRocketCoordinates() {
+            rightRocket.setAttributeNS(null, 'y', this.posY);
+        }
+    }
+
+    //создаем хэш для хранения свойств и метода левой ракетки
+    let leftRocketH = {
+        posY: 200,
+        height: 120,
+        width: 16,
+        speedY: 20,
+        updateLeftRocketCoordinates() {
+            leftRocket.setAttributeNS(null, 'y', this.posY);
+        }
+    }
+
+    leftRocketH.updateLeftRocketCoordinates();
+    rightRocketH.updateRightRocketCoordinates();
+    ballH.updateBallCoordinates();
+
+    /************************************/
+
+    //вешаем событие keydown на document для управления ракетками
+    document.addEventListener('keydown', function (event) {
+        //если нажата 'стрелка вверх'
+        if (event.key === 'ArrowUp') {
+            rightRocketH.posY -= rightRocketH.speedY;
+            //проверяем выходит ли ракетка за пределы верхней части поля
+            if (rightRocketH.posY < 0) {
+                rightRocketH.posY = 0;
+            }
+        }
+
+        //если нажата 'стрелка вниз'
+        if (event.key === 'ArrowDown') {
+            rightRocketH.posY += rightRocketH.speedY;
+            //проверяем выходит ли ракетка за пределы нижней части поля
+            if (rightRocketH.posY + rightRocketH.height > fieldH.height) {
+                rightRocketH.posY = fieldH.height - rightRocketH.height;
+            }
+        }
+
+        //если нажата 'W'
+        if (event.code === 'KeyW') {
+            leftRocketH.posY -= leftRocketH.speedY;
+            //проверяем выходит ли ракетка за пределы верхней части поля
+            if (leftRocketH.posY < 0) {
+                leftRocketH.posY = 0;
+            }
+        }
+
+        //если нажата 'S'
+        if (event.code === 'KeyS') {
+            leftRocketH.posY += leftRocketH.speedY;
+            //проверяем выходит ли ракетка за пределы нижней части поля
+            if (leftRocketH.posY + leftRocketH.height > fieldH.height) {
+                leftRocketH.posY = fieldH.height - leftRocketH.height;
+            }
+        }
+
+        leftRocketH.updateLeftRocketCoordinates();
+        rightRocketH.updateRightRocketCoordinates();
+    })
+
+    /************************************/
+
+    //запуск плавной анимации
+    start.onclick = function() {
+        requestAnimationFrame(tick);
+    }
+
+    function tick() {
+        start.disabled = true;
+
+        let leftPlayerCount = document.getElementById('leftPlayerCount');
+        let rightPlayerCount = document.getElementById('rightPlayerCount');
+
+        ballH.posX += ballH.speedX;
+
+        // дотронулся ли мяч правой ракетки?
+        if (ballH.posX >= fieldH.width - rightRocketH.width - ballH.radius && ballH.posY > rightRocketH.posY && ballH.posY < rightRocketH.posY + rightRocketH.height) {
+            ballH.speedX =- ballH.speedX;
+        }
+
+        // дотронулся ли мяч правой стены?
+        if (ballH.posX + ballH.radius > fieldH.width) {
+            ballH.speedX =- ballH.speedX;
+            leftPlayerCount.innerHTML++;
+            start.disabled = false;
+            ballH.posX = 400;
+            ballH.posY = 250;
+            return;
+        }
+
+        // дотронулся ли мяч левой ракетки?
+        if (ballH.posX <= leftRocketH.width + ballH.radius && ballH.posY > leftRocketH.posY && ballH.posY < leftRocketH.posY + leftRocketH.height) {
+            ballH.speedX =- ballH.speedX;
+        }
+
+        // дотронулся ли мяч левой стены?
+        if (ballH.posX + ballH.radius < 30) {
+            rightPlayerCount.innerHTML++;
+            start.disabled = false;
+            ballH.posX = 400;
+            ballH.posY = 250;
+            return;
+        }
+
+        ballH.posY -= ballH.speedY;
+        // вылетел ли мяч ниже пола?
+        if (ballH.posY + ballH.radius > fieldH.height) {
+            ballH.speedY =- ballH.speedY;
+            ballH.posY = fieldH.height - ballH.radius;
+        }
+        // вылетел ли мяч выше потолка?
+        if (ballH.posY + ballH.radius < 30) {
+            ballH.speedY =- ballH.speedY;
+            ballH.posY = ballH.radius;
+        }
+
+        ballH.updateBallCoordinates();
+        requestAnimationFrame(tick);
+    }
+</script>
+</body>
+</html>
