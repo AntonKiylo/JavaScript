@@ -6,25 +6,8 @@
 </head>
 <body>
 <script>
-    //создаем wrapper для кнопки и счетчика
-    let header = document.createElement('div');
-    header.style.cssText = 'display: flex; margin: 20px';
-    document.body.append(header);
-
-    //создаем кнопку start
-    let start = document.createElement('button');
-    start.innerHTML = 'START';
-    header.append(start);
-
-    //создаем счетчик
-    let counter = document.createElement('div');
-    counter.style.cssText= 'margin-left: 300px'
-    counter.innerHTML = '<span id="leftPlayerCount">0</span> : <span id="rightPlayerCount">0</span>';
-    header.append(counter);
-
-    const svgNS = 'http://www.w3.org/2000/svg';
-
     //создаем svg
+    const svgNS = 'http://www.w3.org/2000/svg';
     let svg = document.createElementNS(svgNS, 'svg');
     svg.setAttributeNS(null, 'width', '800px');
     svg.setAttributeNS(null, 'height', '500px');
@@ -32,6 +15,10 @@
     document.body.appendChild(svg);
 
     //создаем поле для игры
+    let fieldH = {
+        width: 800,
+        height: 500,
+    }
     let field = document.createElementNS(svgNS, 'rect');
     field.setAttributeNS(null, 'id', 'field');
     field.setAttributeNS(null, 'x', '0');
@@ -59,6 +46,16 @@
     rightRocket.setAttributeNS(null, 'fill', 'green');
     svg.appendChild(rightRocket);
 
+    let count = document.createElementNS(svgNS, 'text');
+    count.setAttributeNS(null, 'x', fieldH.width / 2);
+    count.setAttributeNS(null, 'y', fieldH.height / 7);
+    count.setAttributeNS(null, 'font-family', 'serif');
+    count.setAttributeNS(null, 'text-anchor', 'middle');
+    count.setAttributeNS(null, 'font-size', '48');
+    count.setAttributeNS(null, 'id', 'count');
+    // count.innerHTML = `${countH.leftPlayerCount} : ${countH.rightPlayerCount}`;
+    svg.appendChild(count);
+
     //создаем мяч
     let ball = document.createElementNS(svgNS, 'circle');
     ball.setAttributeNS(null, 'r', '15');
@@ -66,7 +63,48 @@
     ball.setAttributeNS(null, 'id', 'ball');
     svg.appendChild(ball);
 
+    //создаем кнопку start
+    let start = document.createElement('button');
+    start.style.cssText = 'margin: 20px 0 0 370px; display: block';
+    start.innerHTML = 'START';
+    document.body.append(start);
+
+    //создаем блок бля обратного отсчета
+    let countDownBlock = document.createElement('div');
+    countDownBlock.setAttribute('id', 'countDownBlock');
+    countDownBlock.style.cssText = 'position: absolute; color: white; font-size: xxx-large; box-sizing: border-box; padding-top: 25%; text-align: center; background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100vh; top: 0; left: 0';
+
     /************************************/
+
+    //создаем хеш для хранения информации о нажатой кнопке
+    let buttonIsPressed = {
+        leftUp: false,
+        leftDown: false,
+        rightUp: false,
+        RightDown: false
+    }
+
+    //создаем хэш для хранения свойств и метода левой ракетки
+    let leftRocketH = {
+        posY: 200,
+        height: 120,
+        width: 16,
+        speedY: 10,
+        updateLeftRocketCoordinates() {
+            leftRocket.setAttributeNS(null, 'y', this.posY);
+        }
+    }
+
+    //создаем хэш для хранения свойств и метода правой ракетки
+    let rightRocketH = {
+        posY: 200,
+        height: 120,
+        width: 16,
+        speedY: 10,
+        updateRightRocketCoordinates() {
+            rightRocket.setAttributeNS(null, 'y', this.posY);
+        }
+    }
 
     //создаем хэш для хранения свойств и метода мяча
     let ballH = {
@@ -81,44 +119,33 @@
         }
     }
 
-    //создаем хэш для хранения свойств поля
-    let fieldH = {
-        width: 800,
-        height: 500,
-    }
-
-    //создаем хэш для хранения свойств и метода правой ракетки
-    let rightRocketH = {
-        posY: 200,
-        height: 120,
-        width: 16,
-        speedY: 20,
-        updateRightRocketCoordinates() {
-            rightRocket.setAttributeNS(null, 'y', this.posY);
+    //создаем хеш для счета
+    let countH = {
+        leftPlayerCount: 0,
+        rightPlayerCount: 0,
+        updateCount() {
+            count.innerHTML = `${countH.leftPlayerCount} : ${countH.rightPlayerCount}`;
         }
     }
 
-    //создаем хэш для хранения свойств и метода левой ракетки
-    let leftRocketH = {
-        posY: 200,
-        height: 120,
-        width: 16,
-        speedY: 20,
-        updateLeftRocketCoordinates() {
-            leftRocket.setAttributeNS(null, 'y', this.posY);
-        }
-    }
-
-    leftRocketH.updateLeftRocketCoordinates();
+    countH.updateCount();
     rightRocketH.updateRightRocketCoordinates();
+    leftRocketH.updateLeftRocketCoordinates();
     ballH.updateBallCoordinates();
 
     /************************************/
 
-    //вешаем событие keydown на document для управления ракетками
-    document.addEventListener('keydown', function (event) {
+    //запуск мяча при клике
+    start.onclick = function() {
+        ballMove();
+        //управление ракеткой
+        moveRocket();
+    }
+
+    //описание управления ракеткой
+    function moveRocket() {
         //если нажата 'стрелка вверх'
-        if (event.key === 'ArrowUp') {
+        if (buttonIsPressed.rightUp === true) {
             rightRocketH.posY -= rightRocketH.speedY;
             //проверяем выходит ли ракетка за пределы верхней части поля
             if (rightRocketH.posY < 0) {
@@ -127,7 +154,7 @@
         }
 
         //если нажата 'стрелка вниз'
-        if (event.key === 'ArrowDown') {
+        if (buttonIsPressed.rightDown === true) {
             rightRocketH.posY += rightRocketH.speedY;
             //проверяем выходит ли ракетка за пределы нижней части поля
             if (rightRocketH.posY + rightRocketH.height > fieldH.height) {
@@ -136,7 +163,7 @@
         }
 
         //если нажата 'W'
-        if (event.code === 'KeyW') {
+        if (buttonIsPressed.leftUp === true) {
             leftRocketH.posY -= leftRocketH.speedY;
             //проверяем выходит ли ракетка за пределы верхней части поля
             if (leftRocketH.posY < 0) {
@@ -145,7 +172,7 @@
         }
 
         //если нажата 'S'
-        if (event.code === 'KeyS') {
+        if (buttonIsPressed.leftDown === true) {
             leftRocketH.posY += leftRocketH.speedY;
             //проверяем выходит ли ракетка за пределы нижней части поля
             if (leftRocketH.posY + leftRocketH.height > fieldH.height) {
@@ -153,23 +180,20 @@
             }
         }
 
-        leftRocketH.updateLeftRocketCoordinates();
+        //устраняем задержку при нажатии на клавишу
+        requestAnimationFrame(moveRocket);
+
+        //изменяем значения свойств хеша для ракеток
         rightRocketH.updateRightRocketCoordinates();
-    })
-
-    /************************************/
-
-    //запуск плавной анимации
-    start.onclick = function() {
-        requestAnimationFrame(tick);
+        leftRocketH.updateLeftRocketCoordinates();
     }
 
-    function tick() {
+    //описание запуска мяча
+    function ballMove() {
+        //делаем кнопку "START" не активной
         start.disabled = true;
 
-        let leftPlayerCount = document.getElementById('leftPlayerCount');
-        let rightPlayerCount = document.getElementById('rightPlayerCount');
-
+        //движение мяча по Х
         ballH.posX += ballH.speedX;
 
         // дотронулся ли мяч правой ракетки?
@@ -179,9 +203,25 @@
 
         // дотронулся ли мяч правой стены?
         if (ballH.posX + ballH.radius > fieldH.width) {
+            countH.leftPlayerCount++;
+            countH.updateCount();
             ballH.speedX =- ballH.speedX;
-            leftPlayerCount.innerHTML++;
-            start.disabled = false;
+            if (+countH.leftPlayerCount > 4) {
+                console.log(countH);
+                start.disabled = false;
+                setTimeout(() => {
+                    ballH.posX = 400;
+                    ballH.posY = 250;
+                    ballH.updateBallCoordinates();
+                    alertFunction();
+                }, 3000)
+                alertFunction();
+                countH.leftPlayerCount = 0;
+                countH.rightPlayerCount = 0;
+                countH.updateCount();
+                return;
+            }
+            countDown();
             ballH.posX = 400;
             ballH.posY = 250;
             return;
@@ -194,28 +234,116 @@
 
         // дотронулся ли мяч левой стены?
         if (ballH.posX + ballH.radius < 30) {
-            rightPlayerCount.innerHTML++;
-            start.disabled = false;
+            countH.rightPlayerCount++;
+            countH.updateCount();
+            ballH.speedX =- ballH.speedX;
+            if (+countH.rightPlayerCount > 4) {
+                start.disabled = false;
+                setTimeout(() => {
+                    ballH.posX = 400;
+                    ballH.posY = 250;
+                    ballH.updateBallCoordinates();
+                    alertFunction();
+                }, 3000)
+                countH.leftPlayerCount = 0;
+                countH.rightPlayerCount = 0;
+                countH.updateCount();
+                return;
+            }
+            countDown();
             ballH.posX = 400;
             ballH.posY = 250;
             return;
         }
 
         ballH.posY -= ballH.speedY;
+
         // вылетел ли мяч ниже пола?
         if (ballH.posY + ballH.radius > fieldH.height) {
             ballH.speedY =- ballH.speedY;
             ballH.posY = fieldH.height - ballH.radius;
         }
+
         // вылетел ли мяч выше потолка?
         if (ballH.posY + ballH.radius < 30) {
             ballH.speedY =- ballH.speedY;
             ballH.posY = ballH.radius;
         }
 
+        //обратный отсчет после забитого гола
+        function countDown() {
+            let counter = 3;
+            countDownBlock.innerHTML = counter;
+            document.body.append(countDownBlock);
+            let interval = setInterval(() => {
+                counter--;
+                countDownBlock.innerHTML = counter;
+                if (counter < 0) {
+                    document.body.removeChild(countDownBlock);
+                    requestAnimationFrame(ballMove);
+                    clearInterval(interval);
+                }
+            }, 1000)
+        }
+
+        //вывод уведомления после завершения игры
+        function alertFunction() {
+            countDownBlock.innerHTML = `GAME OVER<br>${countH.leftPlayerCount} : ${countH.rightPlayerCount}`;
+            document.body.append(countDownBlock);
+            let interval = setTimeout(() => {
+                document.body.removeChild(countDownBlock);
+                clearTimeout(interval);
+            }, 3000)
+        }
+
         ballH.updateBallCoordinates();
-        requestAnimationFrame(tick);
+        requestAnimationFrame(ballMove);
     }
+
+    /************************************/
+
+    //вешаем событие keydown на document для определения какая клавиша нажата
+    document.addEventListener('keydown', function (event) {
+        //если нажата 'стрелка вверх'
+        if (event.key === 'ArrowUp') {
+            buttonIsPressed.rightUp = true;
+        }
+
+        //если нажата 'стрелка вниз'
+        if (event.key === 'ArrowDown') {
+            buttonIsPressed.rightDown = true;
+        }
+
+        //если нажата 'W'
+        if (event.code === 'KeyW') {
+            buttonIsPressed.leftUp = true;
+        }
+
+        //если нажата 'S'
+        if (event.code === 'KeyS') {
+            buttonIsPressed.leftDown = true;
+        }
+    })
+
+    //вешаем событие keydown на document для определения какая клавиша отжата
+    document.addEventListener('keyup', function (event) {
+        //если отпущена 'стрелка вверх'
+        if (event.key === 'ArrowUp') {
+            buttonIsPressed.rightUp = false;
+        }
+        //если отпущена 'стрелка вниз'
+        if (event.key === 'ArrowDown') {
+            buttonIsPressed.rightDown = false;
+        }
+        //если отпущена 'W'
+        if (event.code === 'KeyW') {
+            buttonIsPressed.leftUp = false;
+        }
+        //если отпущена 'S'
+        if (event.code === 'KeyS') {
+            buttonIsPressed.leftDown = false;
+        }
+    })
 </script>
 </body>
 </html>

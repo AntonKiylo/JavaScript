@@ -7,8 +7,7 @@
 <body>
 <canvas id='canvas' width="400" height="400"></canvas>
 <script>
-
-    createClock()
+    createClock();
 
     function createClock() {
         let canvas = document.getElementById('canvas');
@@ -19,14 +18,14 @@
         let minutes = date.getMinutes();
         let hours = date.getHours();
 
-        // ctx.clearRect(0,0,400,400);
-
+        //рисуем диск часов
         ctx.beginPath();
         ctx.arc(clockSize/2, clockSize/2, clockSize/2, 0, 2 * Math.PI);
         ctx.fillStyle = '#e1e1e1';
         ctx.fill();
         ctx.closePath();
 
+        //рисуем циферблат часов
         for (let i = 1; i <= 12; i++) {
             let x = clockSize/2 - (clockSize/2.5) * Math.sin(Math.PI * i / -6);
             let y = clockSize/2 - (clockSize/2.5) * Math.cos(Math.PI * i / -6);
@@ -43,10 +42,12 @@
             ctx.closePath();
         }
 
+        //рисуем цифровые часы
         ctx.beginPath();
         ctx.fillText(`${(hours < 10 ? '0' : '') + hours}:${(minutes < 10 ? '0' : '') + minutes}:${(seconds < 10 ? '0' : '') + seconds}`, clockSize / 2, (clockSize / 2) / 1.5);
         ctx.closePath();
 
+        //рисуем стрелку часов
         let hourAngle = ((Math.PI * 2) * ((hours * 5 + (minutes / 60) * 5) / 60)) - ((Math.PI * 2) / 4);
         ctx.beginPath();
         ctx.moveTo(clockSize / 2, clockSize / 2);
@@ -57,6 +58,7 @@
         ctx.stroke();
         ctx.closePath();
 
+        //рисуем стрелку минут
         let minAngle = ((Math.PI * 2) * (minutes / 60)) - ((Math.PI * 2) / 4);
         ctx.beginPath();
         ctx.moveTo(canvas.width / 2, canvas.height / 2);
@@ -67,6 +69,7 @@
         ctx.stroke();
         ctx.closePath();
 
+        //рисуем стрелку секунд
         let secAngle = ((Math.PI * 2) * (seconds / 60)) - ((Math.PI * 2) / 4);
         ctx.beginPath();
         ctx.moveTo(clockSize / 2, clockSize / 2);
