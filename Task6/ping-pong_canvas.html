@@ -2,50 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ping-pong_canvas</title>
+    <title>ping-pong canvas</title>
 </head>
 <body>
-<canvas id='canvas' width="800" height="500"></canvas>
-<button style="display: block; margin: 20px 0 0 370px;">START</button>
+<canvas id='canvas' width="800" height="500" style="margin: 20px auto; display: block"></canvas>
 <script>
-    let canvas = document.getElementById('canvas');
-    let ctx = canvas.getContext('2d');
-    let start = document.querySelector('button');
+    //создаем хеш для хранения свойств поля
+    let fieldH = {
+        width: 800,
+        height: 500,
+        color: '#dbdbdb',
+    }
 
-    //создаем блок бля обратного отсчета
-    let countDownBlock = document.createElement('div');
-    countDownBlock.setAttribute('id', 'countDownBlock');
-    countDownBlock.style.cssText = 'position: absolute; color: white; font-size: xxx-large; box-sizing: border-box; padding-top: 25%; text-align: center; background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100vh; top: 0; left: 0';
+    //создаем хэш для хранения свойств и метода ракетки
+    let rocketH = {
+        height: 120,
+        width: 16,
+        color: '#787878',
+        leftPosX: 0,
+        leftPosY: 200,
+        rightPosX: 784,
+        rightPosY: 200,
+        speedY: 10,
+    }
+
+    //создаем хеш для счета
+    let countH = {
+        leftPlayerCount: 0,
+        rightPlayerCount: 0,
+        positionX: fieldH.width / 2 - 40,
+        positionY: fieldH.width / 7,
+        fontFamily: '48px serif',
+        color: 'grey',
+    }
 
     //создаем хэш для хранения свойств и метода мяча
     let ballH = {
         posX: 400,
         posY: 250,
         radius: 15,
+        color: 'red',
         speedX: 6,
         speedY: 4,
-    }
-
-    //создаем хэш для хранения свойств поля
-    let fieldH = {
-        width: 800,
-        height: 500,
-    }
-
-    //создаем хэш для хранения свойств и метода правой ракетки
-    let rightRocketH = {
-        posY: 200,
-        height: 120,
-        width: 16,
-        speedY: 10,
-    }
-
-    //создаем хэш для хранения свойств и метода левой ракетки
-    let leftRocketH = {
-        posY: 200,
-        height: 120,
-        width: 16,
-        speedY: 10,
+        updateBallCoordinates() {
+            ball.setAttributeNS(null, 'cx', this.posX);
+            ball.setAttributeNS(null, 'cy', this.posY);
+        }
     }
 
     //создаем хеш для хранения информации о нажатой кнопке
@@ -53,15 +55,23 @@
         leftUp: false,
         leftDown: false,
         rightUp: false,
-        RightDown: false
-    };
-
-    //создаем хеш для счета
-    let countH = {
-        leftPlayerCount: 0,
-        rightPlayerCount: 0
+        rightDown: false
     }
 
+    /****************************************/
+
+    let canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d');
+
+    //создаем блок бля обратного отсчета
+    let countDownBlock = document.createElement('div');
+    countDownBlock.style.cssText = 'display: none; position: absolute; color: white; font-size: xxx-large; box-sizing: border-box; padding-top: 25%; text-align: center; background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100vh; top: 0; left: 0';
+    document.body.appendChild(countDownBlock);
+
+    let start = document.createElement('button');
+    start.style.cssText = 'margin: 20px auto; display: block';
+    start.innerHTML = 'START';
+    document.body.append(start);
     /**************************************/
 
     drawGame();
@@ -70,35 +80,35 @@
         //рисуем поле
         ctx.beginPath();
         ctx.rect(0, 0, fieldH.width, fieldH.height);
-        ctx.fillStyle = 'yellow';
+        ctx.fillStyle = fieldH.color;
         ctx.fill();
         ctx.closePath();
 
         //рисуем счет
         ctx.beginPath();
-        ctx.font = "48px serif";
-        ctx.fillStyle = 'grey';
-        ctx.fillText(`${countH.leftPlayerCount} : ${countH.rightPlayerCount}`, fieldH.width / 2 - 40, fieldH.height / 7);
+        ctx.font = countH.fontFamily;
+        ctx.fillStyle = countH.color;
+        ctx.fillText(`${countH.leftPlayerCount} : ${countH.rightPlayerCount}`, countH.positionX, countH.positionY);
         ctx.closePath();
 
         //рисуем левую ракетку
         ctx.beginPath();
-        ctx.rect(0, leftRocketH.posY, leftRocketH.width, leftRocketH.height);
-        ctx.fillStyle = 'green';
+        ctx.rect(rocketH.leftPosX, rocketH.leftPosY, rocketH.width, rocketH.height);
+        ctx.fillStyle = rocketH.color;
         ctx.fill();
         ctx.closePath();
 
         //рисуем правую ракетку
         ctx.beginPath();
-        ctx.rect(fieldH.width - rightRocketH.width, rightRocketH.posY, rightRocketH.width, rightRocketH.height);
-        ctx.fillStyle = 'blue';
+        ctx.rect(rocketH.rightPosX, rocketH.rightPosY, rocketH.width, rocketH.height);
+        ctx.fillStyle = rocketH.color;
         ctx.fill();
         ctx.closePath();
 
         //рисуем мяч
         ctx.beginPath();
         ctx.arc(ballH.posX, ballH.posY, ballH.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = 'red';
+        ctx.fillStyle = ballH.color;
         ctx.fill();
         ctx.closePath();
 
@@ -114,7 +124,156 @@
         requestAnimationFrame(drawGame);
     }
 
-    /**************************************/
+    //описание управления ракеткой
+    function moveRocket() {
+        //если нажата 'стрелка вверх'
+        if (buttonIsPressed.rightUp === true) {
+            rocketH.rightPosY -= rocketH.speedY;
+            //проверяем выходит ли ракетка за пределы верхней части поля
+            if (rocketH.rightPosY < 0) {
+                rocketH.rightPosY = 0;
+            }
+        }
+
+        //если нажата 'стрелка вниз'
+        if (buttonIsPressed.rightDown === true) {
+            rocketH.rightPosY += rocketH.speedY;
+            //проверяем выходит ли ракетка за пределы нижней части поля
+            if (rocketH.rightPosY + rocketH.height > fieldH.height) {
+                rocketH.rightPosY = fieldH.height - rocketH.height;
+            }
+        }
+
+        //если нажата 'W'
+        if (buttonIsPressed.leftUp === true) {
+            rocketH.leftPosY -= rocketH.speedY;
+            //проверяем выходит ли ракетка за пределы верхней части поля
+            if (rocketH.leftPosY < 0) {
+                rocketH.leftPosY = 0;
+            }
+        }
+
+        //если нажата 'S'
+        if (buttonIsPressed.leftDown === true) {
+            rocketH.leftPosY += rocketH.speedY;
+            //проверяем выходит ли ракетка за пределы нижней части поля
+            if (rocketH.leftPosY + rocketH.height > fieldH.height) {
+                rocketH.leftPosY = fieldH.height - rocketH.height;
+            }
+        }
+
+        //устраняем задержку при нажатии на клавишу
+        requestAnimationFrame(moveRocket);
+    }
+
+    //описание движения мяча
+    function ballMove() {
+        start.disabled = true;
+
+        //движение мяча по Х
+        ballH.posX += ballH.speedX;
+
+        //движение мяча по Y
+        ballH.posY -= ballH.speedY;
+
+        // вылетел ли мяч ниже пола?
+        if (ballH.posY + ballH.radius > fieldH.height) {
+            ballH.speedY =- ballH.speedY;
+            ballH.posY = fieldH.height - ballH.radius;
+        }
+
+        // вылетел ли мяч выше потолка?
+        if (ballH.posY + ballH.radius < 30) {
+            ballH.speedY =- ballH.speedY;
+            ballH.posY = ballH.radius;
+        }
+
+        // дотронулся ли мяч ракетки?
+        if (ballH.posX >= fieldH.width - rocketH.width - ballH.radius
+            && ballH.posY > rocketH.rightPosY
+            && ballH.posY < rocketH.rightPosY + rocketH.height
+            || ballH.posX <= rocketH.width + ballH.radius
+            && ballH.posY > rocketH.leftPosY
+            && ballH.posY < rocketH.leftPosY + rocketH.height){
+            ballH.speedX =- ballH.speedX;
+        }
+
+        // дотронулся ли мяч правой стены?
+        if (ballH.posX + ballH.radius + 5 > fieldH.width) {
+            countH.leftPlayerCount++;
+            ballH.speedX =- ballH.speedX;
+            if (+countH.leftPlayerCount > 4) {
+                checkCount();
+                return;
+            }
+            countDown();
+            setTimeout(() => {
+                ballH.posX = 400;
+                ballH.posY = 250;
+            }, 3000)
+            return;
+        }
+
+        // дотронулся ли мяч левой стены?
+        if (ballH.posX + ballH.radius - 5 < 30) {
+            countH.rightPlayerCount++;
+            ballH.speedX =- ballH.speedX;
+            if (+countH.rightPlayerCount > 4) {
+                checkCount();
+                return;
+            }
+            countDown();
+            setTimeout(() => {
+                ballH.posX = 400;
+                ballH.posY = 250;
+            }, 3000)
+            return;
+        }
+
+        //обратный отсчет после забитого гола
+
+
+        requestAnimationFrame(ballMove);
+    }
+
+    function countDown() {
+        let counter = 3;
+        countDownBlock.innerHTML = counter.toString();
+        countDownBlock.style.display = 'block';
+        let interval = setInterval(() => {
+            counter--;
+            countDownBlock.innerHTML = counter.toString();
+            if (counter === 0) {
+                countDownBlock.style.display = 'none';
+                requestAnimationFrame(ballMove);
+                clearInterval(interval);
+            }
+        }, 1000)
+    }
+
+    //вывод уведомления после завершения игры
+    function alertFunction() {
+        countDownBlock.innerHTML = `GAME OVER<br>${countH.leftPlayerCount} : ${countH.rightPlayerCount}`;
+        countDownBlock.style.display = 'block';
+        setTimeout(() => {
+            countDownBlock.style.display = 'none';
+        }, 3000)
+    }
+
+    function checkCount() {
+        setTimeout(() => {
+            start.disabled = false;
+            ballH.posX = 400;
+            ballH.posY = 250;
+            rocketH.rightPosY = 200;
+            rocketH.leftPosY = 200;
+            countH.leftPlayerCount = 0;
+            countH.rightPlayerCount = 0;
+        }, 3000)
+
+        alertFunction();
+    }
+    /*************************************/
 
     //вешаем событие keydown на document для определения какая клавиша нажата
     document.addEventListener('keydown', function (event) {
@@ -158,150 +317,6 @@
             buttonIsPressed.leftDown = false;
         }
     })
-
-    //описание управления ракеткой
-    function moveRocket() {
-        //если нажата 'стрелка вверх'
-        if (buttonIsPressed.rightUp === true) {
-            rightRocketH.posY -= rightRocketH.speedY;
-            //проверяем выходит ли ракетка за пределы верхней части поля
-            if (rightRocketH.posY < 0) {
-                rightRocketH.posY = 0;
-            }
-        }
-
-        //если нажата 'стрелка вниз'
-        if (buttonIsPressed.rightDown === true) {
-            rightRocketH.posY += rightRocketH.speedY;
-            //проверяем выходит ли ракетка за пределы нижней части поля
-            if (rightRocketH.posY + rightRocketH.height > fieldH.height) {
-                rightRocketH.posY = fieldH.height - rightRocketH.height;
-            }
-        }
-
-        //если нажата 'W'
-        if (buttonIsPressed.leftUp === true) {
-            leftRocketH.posY -= leftRocketH.speedY;
-            //проверяем выходит ли ракетка за пределы верхней части поля
-            if (leftRocketH.posY < 0) {
-                leftRocketH.posY = 0;
-            }
-        }
-
-        //если нажата 'S'
-        if (buttonIsPressed.leftDown === true) {
-            leftRocketH.posY += leftRocketH.speedY;
-            //проверяем выходит ли ракетка за пределы нижней части поля
-            if (leftRocketH.posY + leftRocketH.height > fieldH.height) {
-                leftRocketH.posY = fieldH.height - leftRocketH.height;
-            }
-        }
-
-        //устраняем задержку при нажатии на клавишу
-        requestAnimationFrame(moveRocket);
-    }
-
-    function ballMove() {
-        start.disabled = true;
-
-        //движение мяча по Х
-        ballH.posX += ballH.speedX;
-
-        //движение мяча по Y
-        ballH.posY -= ballH.speedY;
-
-        // вылетел ли мяч ниже пола?
-        if (ballH.posY + ballH.radius > fieldH.height) {
-            ballH.speedY =- ballH.speedY;
-            ballH.posY = fieldH.height - ballH.radius;
-        }
-
-        // вылетел ли мяч выше потолка?
-        if (ballH.posY + ballH.radius < 30) {
-            ballH.speedY =- ballH.speedY;
-            ballH.posY = ballH.radius;
-        }
-
-        // дотронулся ли мяч правой ракетки?
-        if (ballH.posX >= fieldH.width - rightRocketH.width - ballH.radius && ballH.posY > rightRocketH.posY && ballH.posY < rightRocketH.posY + rightRocketH.height) {
-            ballH.speedX =- ballH.speedX;
-        }
-
-        // дотронулся ли мяч левой ракетки?
-        if (ballH.posX <= leftRocketH.width + ballH.radius && ballH.posY > leftRocketH.posY && ballH.posY < leftRocketH.posY + leftRocketH.height) {
-            ballH.speedX =- ballH.speedX;
-        }
-
-        // дотронулся ли мяч правой стены?
-        if (ballH.posX + ballH.radius + 5 > fieldH.width) {
-            countH.leftPlayerCount++;
-            ballH.speedX =- ballH.speedX;
-            if (+countH.leftPlayerCount > 4) {
-                start.disabled = false;
-                ballH.posX = 400;
-                ballH.posY = 250;
-                alertFunction();
-                countH.leftPlayerCount = 0;
-                countH.rightPlayerCount = 0;
-                return;
-            }
-            countDown();
-            setTimeout(() => {
-                ballH.posX = 400;
-                ballH.posY = 250;
-            }, 4000)
-            return;
-        }
-
-        // дотронулся ли мяч левой стены?
-        if (ballH.posX + ballH.radius - 5 < 30) {
-            countH.rightPlayerCount++;
-            ballH.speedX =- ballH.speedX;
-            if (+countH.rightPlayerCount > 4) {
-                start.disabled = false;
-                ballH.posX = 400;
-                ballH.posY = 250;
-                alertFunction();
-                countH.leftPlayerCount = 0;
-                countH.rightPlayerCount = 0;
-                return;
-            }
-            countDown();
-            setTimeout(() => {
-                ballH.posX = 400;
-                ballH.posY = 250;
-            }, 4000)
-            return;
-        }
-
-        //обратный отсчет после забитого гола
-        function countDown() {
-            let counter = 3;
-            countDownBlock.innerHTML = counter;
-            document.body.append(countDownBlock);
-            let interval = setInterval(() => {
-                counter--;
-                countDownBlock.innerHTML = counter;
-                if (counter < 0) {
-                    document.body.removeChild(countDownBlock);
-                    requestAnimationFrame(ballMove);
-                    clearInterval(interval);
-                }
-            }, 1000)
-        }
-
-        //вывод уведомления после завершения игры
-        function alertFunction() {
-            countDownBlock.innerHTML = `GAME OVER<br>${countH.leftPlayerCount} : ${countH.rightPlayerCount}`;
-            document.body.append(countDownBlock);
-            let interval = setTimeout(() => {
-                document.body.removeChild(countDownBlock);
-                clearTimeout(interval);
-            }, 3000)
-        }
-
-        requestAnimationFrame(ballMove);
-    }
 </script>
 </body>
 </html>

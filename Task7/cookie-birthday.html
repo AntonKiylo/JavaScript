@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>cookie birthday</title>
+    <style>
+        #input {
+            width: 400px;
+            height: 200px;
+            background-color: #e8e8e8;
+            border-radius: 12px;
+            top: -220px;
+            position: absolute;
+            box-shadow: 0 0 18px 2px rgba(0, 0, 0, 0.34);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        input {
+            width: 300px;
+            display: block;
+            margin: 24px auto;
+            padding: 6px;
+            border-radius: 10px;
+            outline: 0;
+        }
+
+        #save {
+            display: block;
+            margin: 0 auto;
+            padding: 4px 20px;
+            color: #4c4c4c;
+            cursor: pointer;
+        }
+
+        #greeting {
+            width: 400px;
+            height: 200px;
+            background-color: #e8e8e8;
+            border-radius: 12px;
+            top: -220px;
+            position: absolute;
+            box-shadow: 0 0 18px 2px rgba(0, 0, 0, 0.34);
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #787878;
+            font-size: 40px;
+            line-height: 93px;
+        }
+
+        #countdownBlock {
+            width: 400px;
+            height: 200px;
+            background-color: #e8e8e8;
+            border-radius: 12px;
+            top: 700px;
+            position: absolute;
+            box-shadow: 0 0 18px 2px rgba(0, 0, 0, 0.34);
+            left: -14%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #787878;
+        }
+
+        #wrapper {
+            display: flex;
+        }
+
+        #wrapper > * {
+            margin: 16px auto;
+        }
+
+        .countdown {
+            box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.34);
+            font-size: 35px;
+            border-radius: 8px;
+            width: 70px;
+            height: 50px;
+            padding-top: 10px;
+            background-color: white;
+        }
+
+        #closeGreeting {
+            display: block;
+            margin: 14px 0 17px 361px;
+            cursor: pointer;
+        }
+
+        #closeCountdown {
+            margin-left: 200px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id='input'>
+    <input type="text" placeholder='Enter your name' id='userName'>
+    <input type="text" placeholder='Enter your birthday' id='userBirthday'>
+    <button id="save">SAVE</button>
+</div>
+<div id="greeting"><button id="closeGreeting">X</button></div>
+<div id="countdownBlock">
+    <p style="display: inline-block; padding-top: 6px">Left before birthday</p>
+    <button id="closeCountdown">X</button>
+    <div id="wrapper">
+        <div>
+            <div id="days" class="countdown"></div>
+            <p>days</p>
+        </div>
+        <div>
+            <div id="hours" class="countdown"></div>
+            <p>hours</p>
+        </div>
+        <div>
+            <div id="minutes" class="countdown"></div>
+            <p>minutes</p>
+        </div>
+        <div>
+            <div id="seconds" class="countdown"></div>
+            <p>seconds</p>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js"></script>
+<script>
+    let userInfo = localStorage.getItem('userInfo');
+
+    if (userInfo === null) {
+        //вызываем блок ввода данных
+        gsap.to('#input', {duration: 3, ease: "elastic.out(1, 0.3)", y: 400});
+
+        //сохраняем данные в localStorage(строка) и скрываем блок ввода данных
+        document.querySelector('#save').onclick = function () {
+            let userName = document.getElementById('userName').value,
+                userBirthday = new Date(document.getElementById('userBirthday').value.split('.').reverse().join(','));
+
+            localStorage.setItem('userInfo', JSON.stringify({name: userName, birthday: userBirthday}));
+
+            gsap.to('#input', { duration: 0.6, ease: "back.in(1.7)", y: -400 });
+        }
+    } else {
+        //парсим данные из localStorage
+        let userInfoToHash = JSON.parse(localStorage.userInfo, function (key, value) {
+                if (key === 'birthday') return new Date(value);
+                return value;
+            }),
+            second = 1000,
+            minute = second * 60,
+            hour = minute * 60,
+            day = hour * 24,
+            year = (new Date().getMonth() > userInfoToHash.birthday.getMonth()) ? new Date().getFullYear() + 1 : new Date().getFullYear(),
+            birthDay = userInfoToHash.birthday.getDate(),
+            birthMonth = +userInfoToHash.birthday.getMonth() + 1,
+            birth = new Date(`${year}, ${birthMonth}, ${birthDay} 00:00:00`).getTime();
+
+        //записываем Имя пользователя в блок приветсвия
+        document.getElementById('greeting').append(`Hello ${userInfoToHash.name}`);
+        //вызываем блок приветсвия
+        gsap.to('#greeting', {duration: 3, ease: "elastic.out(1, 0.3)", y: 300});
+
+        document.getElementById('closeGreeting').onclick = function() {
+            gsap.to('#greeting', { duration: 0.6, ease: "back.in(1.7)", y: -400 });
+        }
+
+        //вызываем блок отсчета дня рождения
+        gsap.to('#countdownBlock', {duration: 3, ease: "elastic.out(1, 0.3)", x: 550});
+
+        document.getElementById('closeCountdown').onclick = function() {
+            gsap.to('#countdownBlock', { duration: 0.6, ease: "back.in(1.7)", x: -500 });
+        }
+
+        //отсчет дня рождения
+        birthCountdown();
+        function birthCountdown() {
+            let currentDate = new Date().getTime(),
+                distance = birth - currentDate,
+                d = Math.floor(distance / (day)),
+                hou = Math.floor((distance % (day)) / (hour)),
+                min = Math.floor((distance % (hour)) / (minute)),
+                sec = Math.floor((distance % (minute)) / second);
+
+            document.getElementById('days').innerText = (d < 10) ? "0" + d : d;
+            document.getElementById('hours').innerText = (hou < 10) ? "0" + hou : hou;
+            document.getElementById('minutes').innerText = (min < 10) ? "0" + min : min;
+            document.getElementById('seconds').innerText = (sec < 10) ? "0" + sec : sec;
+
+            setTimeout(birthCountdown, second)
+        }
+    }
+</script>
+</body>
+</html>

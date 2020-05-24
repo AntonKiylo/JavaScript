@@ -2,107 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>tennis-svg</title>
+    <title>tennis svg</title>
 </head>
 <body>
 <script>
-    //создаем svg
-    const svgNS = 'http://www.w3.org/2000/svg';
-    let svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttributeNS(null, 'width', '800px');
-    svg.setAttributeNS(null, 'height', '500px');
-    svg.setAttributeNS(null, 'id', 'svg');
-    document.body.appendChild(svg);
-
-    //создаем поле для игры
+    //создаем хеш для хранения свойств поля
     let fieldH = {
         width: 800,
         height: 500,
-    }
-    let field = document.createElementNS(svgNS, 'rect');
-    field.setAttributeNS(null, 'id', 'field');
-    field.setAttributeNS(null, 'x', '0');
-    field.setAttributeNS(null, 'y', '0');
-    field.setAttributeNS(null, 'width', '800');
-    field.setAttributeNS(null, 'height', '500');
-    field.setAttributeNS(null, 'fill', 'yellow');
-    svg.appendChild(field);
-
-    //создаем левую ракетку
-    let leftRocket = document.createElementNS(svgNS, 'rect');
-    leftRocket.setAttributeNS(null, 'id', 'leftRocket');
-    leftRocket.setAttributeNS(null, 'x', '0');
-    leftRocket.setAttributeNS(null, 'width', '16');
-    leftRocket.setAttributeNS(null, 'height', '120');
-    leftRocket.setAttributeNS(null, 'fill', 'blue');
-    svg.appendChild(leftRocket);
-
-    //создаем правую ракетку
-    let rightRocket = document.createElementNS(svgNS, 'rect');
-    rightRocket.setAttributeNS(null, 'id', 'rightRocket');
-    rightRocket.setAttributeNS(null, 'x', '784');
-    rightRocket.setAttributeNS(null, 'width', '16');
-    rightRocket.setAttributeNS(null, 'height', '120');
-    rightRocket.setAttributeNS(null, 'fill', 'green');
-    svg.appendChild(rightRocket);
-
-    let count = document.createElementNS(svgNS, 'text');
-    count.setAttributeNS(null, 'x', fieldH.width / 2);
-    count.setAttributeNS(null, 'y', fieldH.height / 7);
-    count.setAttributeNS(null, 'font-family', 'serif');
-    count.setAttributeNS(null, 'text-anchor', 'middle');
-    count.setAttributeNS(null, 'font-size', '48');
-    count.setAttributeNS(null, 'id', 'count');
-    // count.innerHTML = `${countH.leftPlayerCount} : ${countH.rightPlayerCount}`;
-    svg.appendChild(count);
-
-    //создаем мяч
-    let ball = document.createElementNS(svgNS, 'circle');
-    ball.setAttributeNS(null, 'r', '15');
-    ball.setAttributeNS(null, 'fill', 'red');
-    ball.setAttributeNS(null, 'id', 'ball');
-    svg.appendChild(ball);
-
-    //создаем кнопку start
-    let start = document.createElement('button');
-    start.style.cssText = 'margin: 20px 0 0 370px; display: block';
-    start.innerHTML = 'START';
-    document.body.append(start);
-
-    //создаем блок бля обратного отсчета
-    let countDownBlock = document.createElement('div');
-    countDownBlock.setAttribute('id', 'countDownBlock');
-    countDownBlock.style.cssText = 'position: absolute; color: white; font-size: xxx-large; box-sizing: border-box; padding-top: 25%; text-align: center; background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100vh; top: 0; left: 0';
-
-    /************************************/
-
-    //создаем хеш для хранения информации о нажатой кнопке
-    let buttonIsPressed = {
-        leftUp: false,
-        leftDown: false,
-        rightUp: false,
-        RightDown: false
+        color: '#dbdbdb',
     }
 
-    //создаем хэш для хранения свойств и метода левой ракетки
-    let leftRocketH = {
-        posY: 200,
+    //создаем хэш для хранения свойств и метода ракетки
+    let rocketH = {
         height: 120,
         width: 16,
+        radius: 10,
+        color: '#787878',
+        leftPosX: 0,
+        leftPosY: 200,
+        rightPosX: 784,
+        rightPosY: 200,
         speedY: 10,
         updateLeftRocketCoordinates() {
-            leftRocket.setAttributeNS(null, 'y', this.posY);
+            leftRocket.setAttributeNS(null, 'y', this.leftPosY);
+        },
+        updateRightRocketCoordinates() {
+            rightRocket.setAttributeNS(null, 'y', this.rightPosY);
         }
     }
 
-    //создаем хэш для хранения свойств и метода правой ракетки
-    let rightRocketH = {
-        posY: 200,
-        height: 120,
-        width: 16,
-        speedY: 10,
-        updateRightRocketCoordinates() {
-            rightRocket.setAttributeNS(null, 'y', this.posY);
+    //создаем хеш для счета
+    let countH = {
+        leftPlayerCount: 0,
+        rightPlayerCount: 0,
+        positionX: fieldH.width / 2,
+        positionY: fieldH.width / 7,
+        fontFamily: 'serif',
+        color: 'grey',
+        fontSize: 48,
+        updateCount() {
+            count.innerHTML = `${countH.leftPlayerCount} : ${countH.rightPlayerCount}`;
         }
     }
 
@@ -111,6 +51,7 @@
         posX: 400,
         posY: 250,
         radius: 15,
+        color: 'red',
         speedX: 6,
         speedY: 4,
         updateBallCoordinates() {
@@ -119,26 +60,94 @@
         }
     }
 
-    //создаем хеш для счета
-    let countH = {
-        leftPlayerCount: 0,
-        rightPlayerCount: 0,
-        updateCount() {
-            count.innerHTML = `${countH.leftPlayerCount} : ${countH.rightPlayerCount}`;
-        }
+    //создаем хеш для хранения информации о нажатой кнопке
+    let buttonIsPressed = {
+        leftUp: false,
+        leftDown: false,
+        rightUp: false,
+        rightDown: false
     }
 
+    /****************************************/
+
+    //создаем svg
+    const svgNS = 'http://www.w3.org/2000/svg';
+    let svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttributeNS(null, 'width', fieldH.width);
+    svg.setAttributeNS(null, 'height', fieldH.height);
+    svg.style.cssText = 'margin: 20px auto; display: block';
+    document.body.appendChild(svg);
+
+    //создаем поле для игры
+    let field = document.createElementNS(svgNS, 'rect');
+    field.setAttributeNS(null, 'x', '0');
+    field.setAttributeNS(null, 'y', '0');
+    field.setAttributeNS(null, 'rx', '12');
+    field.setAttributeNS(null, 'ry', '12');
+    field.setAttributeNS(null, 'width', fieldH.width);
+    field.setAttributeNS(null, 'height', fieldH.height);
+    field.setAttributeNS(null, 'fill', fieldH.color);
+    svg.appendChild(field);
+
+    //создаем левую ракетку
+    let leftRocket = document.createElementNS(svgNS, 'rect');
+    leftRocket.setAttributeNS(null, 'x', rocketH.leftPosX);
+    leftRocket.setAttributeNS(null, 'rx', rocketH.radius);
+    leftRocket.setAttributeNS(null, 'ry', rocketH.radius);
+    leftRocket.setAttributeNS(null, 'width', rocketH.width);
+    leftRocket.setAttributeNS(null, 'height', rocketH.height);
+    leftRocket.setAttributeNS(null, 'fill', rocketH.color);
+    svg.appendChild(leftRocket);
+
+    //создаем правую ракетку
+    let rightRocket = document.createElementNS(svgNS, 'rect');
+    rightRocket.setAttributeNS(null, 'x', rocketH.rightPosX);
+    rightRocket.setAttributeNS(null, 'rx', rocketH.radius);
+    rightRocket.setAttributeNS(null, 'ry', rocketH.radius);
+    rightRocket.setAttributeNS(null, 'width', rocketH.width);
+    rightRocket.setAttributeNS(null, 'height', rocketH.height);
+    rightRocket.setAttributeNS(null, 'fill', rocketH.color);
+    svg.appendChild(rightRocket);
+
+    //счет
+    let count = document.createElementNS(svgNS, 'text');
+    count.setAttributeNS(null, 'text-anchor', 'middle');
+    count.setAttributeNS(null, 'x', countH.positionX);
+    count.setAttributeNS(null, 'y', countH.positionY);
+    count.setAttributeNS(null, 'font-family', countH.fontFamily);
+    count.setAttributeNS(null, 'fill', countH.color);
+    count.setAttributeNS(null, 'font-size', countH.fontSize);
+    svg.appendChild(count);
+
+    //создаем мяч
+    let ball = document.createElementNS(svgNS, 'circle');
+    ball.setAttributeNS(null, 'r', ballH.radius);
+    ball.setAttributeNS(null, 'fill', ballH.color);
+    svg.appendChild(ball);
+
+    //создаем кнопку start
+    let start = document.createElement('button');
+    start.style.cssText = 'margin: 20px auto; display: block';
+    start.innerHTML = 'START';
+    document.body.append(start);
+
+    //создаем блок бля обратного отсчета
+    let countDownBlock = document.createElement('div');
+    countDownBlock.style.cssText = 'display: none; position: absolute; color: white; font-size: xxx-large; box-sizing: border-box; padding-top: 25%; text-align: center; background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100vh; top: 0; left: 0';
+    document.body.appendChild(countDownBlock);
+
     countH.updateCount();
-    rightRocketH.updateRightRocketCoordinates();
-    leftRocketH.updateLeftRocketCoordinates();
+    rocketH.updateRightRocketCoordinates();
+    rocketH.updateLeftRocketCoordinates();
     ballH.updateBallCoordinates();
 
     /************************************/
 
     //запуск мяча при клике
     start.onclick = function() {
+        //запуск мяча
         ballMove();
-        //управление ракеткой
+        //запуск ракетки
         moveRocket();
     }
 
@@ -146,37 +155,37 @@
     function moveRocket() {
         //если нажата 'стрелка вверх'
         if (buttonIsPressed.rightUp === true) {
-            rightRocketH.posY -= rightRocketH.speedY;
+            rocketH.rightPosY -= rocketH.speedY;
             //проверяем выходит ли ракетка за пределы верхней части поля
-            if (rightRocketH.posY < 0) {
-                rightRocketH.posY = 0;
+            if (rocketH.rightPosY < 0) {
+                rocketH.rightPosY = 0;
             }
         }
 
         //если нажата 'стрелка вниз'
         if (buttonIsPressed.rightDown === true) {
-            rightRocketH.posY += rightRocketH.speedY;
+            rocketH.rightPosY += rocketH.speedY;
             //проверяем выходит ли ракетка за пределы нижней части поля
-            if (rightRocketH.posY + rightRocketH.height > fieldH.height) {
-                rightRocketH.posY = fieldH.height - rightRocketH.height;
+            if (rocketH.rightPosY + rocketH.height > fieldH.height) {
+                rocketH.rightPosY = fieldH.height - rocketH.height;
             }
         }
 
         //если нажата 'W'
         if (buttonIsPressed.leftUp === true) {
-            leftRocketH.posY -= leftRocketH.speedY;
+            rocketH.leftPosY -= rocketH.speedY;
             //проверяем выходит ли ракетка за пределы верхней части поля
-            if (leftRocketH.posY < 0) {
-                leftRocketH.posY = 0;
+            if (rocketH.leftPosY < 0) {
+                rocketH.leftPosY = 0;
             }
         }
 
         //если нажата 'S'
         if (buttonIsPressed.leftDown === true) {
-            leftRocketH.posY += leftRocketH.speedY;
+            rocketH.leftPosY += rocketH.speedY;
             //проверяем выходит ли ракетка за пределы нижней части поля
-            if (leftRocketH.posY + leftRocketH.height > fieldH.height) {
-                leftRocketH.posY = fieldH.height - leftRocketH.height;
+            if (rocketH.leftPosY + rocketH.height > fieldH.height) {
+                rocketH.leftPosY = fieldH.height - rocketH.height;
             }
         }
 
@@ -184,8 +193,8 @@
         requestAnimationFrame(moveRocket);
 
         //изменяем значения свойств хеша для ракеток
-        rightRocketH.updateRightRocketCoordinates();
-        leftRocketH.updateLeftRocketCoordinates();
+        rocketH.updateRightRocketCoordinates();
+        rocketH.updateLeftRocketCoordinates();
     }
 
     //описание запуска мяча
@@ -196,67 +205,18 @@
         //движение мяча по Х
         ballH.posX += ballH.speedX;
 
-        // дотронулся ли мяч правой ракетки?
-        if (ballH.posX >= fieldH.width - rightRocketH.width - ballH.radius && ballH.posY > rightRocketH.posY && ballH.posY < rightRocketH.posY + rightRocketH.height) {
-            ballH.speedX =- ballH.speedX;
-        }
-
-        // дотронулся ли мяч правой стены?
-        if (ballH.posX + ballH.radius > fieldH.width) {
-            countH.leftPlayerCount++;
-            countH.updateCount();
-            ballH.speedX =- ballH.speedX;
-            if (+countH.leftPlayerCount > 4) {
-                console.log(countH);
-                start.disabled = false;
-                setTimeout(() => {
-                    ballH.posX = 400;
-                    ballH.posY = 250;
-                    ballH.updateBallCoordinates();
-                    alertFunction();
-                }, 3000)
-                alertFunction();
-                countH.leftPlayerCount = 0;
-                countH.rightPlayerCount = 0;
-                countH.updateCount();
-                return;
-            }
-            countDown();
-            ballH.posX = 400;
-            ballH.posY = 250;
-            return;
-        }
-
-        // дотронулся ли мяч левой ракетки?
-        if (ballH.posX <= leftRocketH.width + ballH.radius && ballH.posY > leftRocketH.posY && ballH.posY < leftRocketH.posY + leftRocketH.height) {
-            ballH.speedX =- ballH.speedX;
-        }
-
-        // дотронулся ли мяч левой стены?
-        if (ballH.posX + ballH.radius < 30) {
-            countH.rightPlayerCount++;
-            countH.updateCount();
-            ballH.speedX =- ballH.speedX;
-            if (+countH.rightPlayerCount > 4) {
-                start.disabled = false;
-                setTimeout(() => {
-                    ballH.posX = 400;
-                    ballH.posY = 250;
-                    ballH.updateBallCoordinates();
-                    alertFunction();
-                }, 3000)
-                countH.leftPlayerCount = 0;
-                countH.rightPlayerCount = 0;
-                countH.updateCount();
-                return;
-            }
-            countDown();
-            ballH.posX = 400;
-            ballH.posY = 250;
-            return;
-        }
-
+        //движение мяча по Y
         ballH.posY -= ballH.speedY;
+
+        // дотронулся ли мяч ракетки?
+        if (ballH.posX <= rocketH.width + ballH.radius
+            && ballH.posY > rocketH.leftPosY
+            && ballH.posY < rocketH.leftPosY + rocketH.height
+            || ballH.posX >= fieldH.width - rocketH.width - ballH.radius
+            && ballH.posY > rocketH.rightPosY
+            && ballH.posY < rocketH.rightPosY + rocketH.height) {
+            ballH.speedX =- ballH.speedX;
+        }
 
         // вылетел ли мяч ниже пола?
         if (ballH.posY + ballH.radius > fieldH.height) {
@@ -270,34 +230,82 @@
             ballH.posY = ballH.radius;
         }
 
-        //обратный отсчет после забитого гола
-        function countDown() {
-            let counter = 3;
-            countDownBlock.innerHTML = counter;
-            document.body.append(countDownBlock);
-            let interval = setInterval(() => {
-                counter--;
-                countDownBlock.innerHTML = counter;
-                if (counter < 0) {
-                    document.body.removeChild(countDownBlock);
-                    requestAnimationFrame(ballMove);
-                    clearInterval(interval);
-                }
-            }, 1000)
+        /***************************************/
+
+        // дотронулся ли мяч правой стены?
+        if (ballH.posX + ballH.radius > fieldH.width) {
+            countH.leftPlayerCount++;
+            countH.updateCount();
+            ballH.speedX =- ballH.speedX;
+            if (+countH.leftPlayerCount > 4) {
+                checkCount();
+                return;
+            }
+            countDown();
+            ballH.posX = 400;
+            ballH.posY = 250;
+            return;
         }
 
-        //вывод уведомления после завершения игры
-        function alertFunction() {
-            countDownBlock.innerHTML = `GAME OVER<br>${countH.leftPlayerCount} : ${countH.rightPlayerCount}`;
-            document.body.append(countDownBlock);
-            let interval = setTimeout(() => {
-                document.body.removeChild(countDownBlock);
-                clearTimeout(interval);
-            }, 3000)
+        // дотронулся ли мяч левой стены?
+        if (ballH.posX + ballH.radius < 30) {
+            countH.rightPlayerCount++;
+            countH.updateCount();
+            ballH.speedX =- ballH.speedX;
+            if (+countH.rightPlayerCount > 4) {
+                checkCount();
+                return;
+            }
+            countDown();
+            ballH.posX = 400;
+            ballH.posY = 250;
+            return;
         }
 
         ballH.updateBallCoordinates();
         requestAnimationFrame(ballMove);
+    }
+
+    //описание обратнго отсчет после забитого гола
+    function countDown() {
+        let counter = 3;
+        countDownBlock.innerHTML = counter.toString();
+        countDownBlock.style.display = 'block';
+        let interval = setInterval(() => {
+            counter--;
+            countDownBlock.innerHTML = counter.toString();
+            if (counter === 0) {
+                countDownBlock.style.display = 'none';
+                requestAnimationFrame(ballMove);
+                clearInterval(interval);
+            }
+        }, 1000)
+    }
+
+    //описание вывода уведомления после завершения игры
+    function alertFunction() {
+        countDownBlock.innerHTML = `GAME OVER<br>${countH.leftPlayerCount} : ${countH.rightPlayerCount}`;
+        countDownBlock.style.display = 'block';
+        setTimeout(() => {
+            countDownBlock.style.display = 'none';
+        }, 3000)
+    }
+
+    //описание проверки счет
+    function checkCount() {
+        setTimeout(() => {
+            start.disabled = false;
+            ballH.posX = 400;
+            ballH.posY = 250;
+            rocketH.rightPosY = 200;
+            rocketH.leftPosY = 200;
+            countH.leftPlayerCount = 0;
+            countH.rightPlayerCount = 0;
+            countH.updateCount();
+            ballH.updateBallCoordinates();
+        }, 3000)
+
+        alertFunction();
     }
 
     /************************************/
