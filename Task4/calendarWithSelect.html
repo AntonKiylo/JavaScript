@@ -1,0 +1,251 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+
+        body {
+            padding: 15px;
+        }
+
+        table {
+            margin: 10px 0;
+            border-collapse: collapse;
+            font-size: 150%;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            vertical-align: center;
+            border: 1px solid #a3c2c2;
+            width: 40px;
+        }
+
+        th {
+            background-color: #ccffff;
+        }
+
+        td {
+            background-color: #f0f5f5;
+        }
+
+        .weekend {
+            background-color: #85adad;
+            color: white;
+        }
+
+        td.not-important {
+            background-color: white;
+            color: #b3cccc;
+        }
+
+        .selected {
+            background-color: red;
+            color: white;
+        }
+
+        button {
+            padding: 0px 14px;
+            font-size: 75%;
+            border-radius: 5px;
+            border: 1px solid #666;
+            font-weight: bold;
+        }
+
+        button:hover {
+            cursor: pointer;
+            background-color: #85adad;
+            color: white;
+        }
+
+        .select {
+            padding: 5px 7px;
+            margin-right: 20px;
+        }
+
+        button.select {
+            font-size: inherit;
+            padding: 5px 14px;
+            border-radius: 0px;
+        }
+
+    </style>
+</head>
+<body>
+<script>
+    // создаём select выбор года
+    let selectYear = document.createElement('select');
+    selectYear.classList.add('select');
+    selectYear.onchange = changeCreateBtn; // сделать кнопку "Создать" активной
+    let yearArr = ['выбрать год'];
+    for (let i = 1980; i < 2021; i++) {
+        yearArr.push(i);
+    }
+    for (let i = 0; i < yearArr.length; i++) {
+        let year = document.createElement('option');
+        year.value = yearArr[i];
+        year.innerHTML = yearArr[i];
+        selectYear.append(year);
+    }
+
+    // создаём select выбор месяца
+    let selectMon = document.createElement('select');
+    selectMon.classList.add('select');
+    selectMon.onchange = changeCreateBtn; // сделать кнопку "Создать" активной
+    let monArr = ['выбрать месяц', 'январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
+    for (let i = 0; i < monArr.length; i++) {
+        let month = document.createElement('option');
+        month.value = monArr[i];
+        month.innerHTML = monArr[i];
+        selectMon.append(month);
+    }
+
+    // создаем кнопку 'создать' с функцией по клику
+    let createBtn = document.createElement('button');
+    createBtn.innerHTML = 'Создать';
+    createBtn.classList.add('select');
+    createBtn.disabled = true;
+    createBtn.onclick = createCalendar;
+
+    // создаем кнопку удалить с функцией по клику
+    let deleteBtn = document.createElement('button');
+    deleteBtn.innerHTML = 'Удалить';
+    deleteBtn.classList.add('select');
+    deleteBtn.onclick = deleteCalendar;
+    deleteBtn.disabled = true;
+    document.body.prepend(selectMon, selectYear, createBtn, deleteBtn);
+
+    // функция проверки установки disabled для кнопки создать
+    function changeCreateBtn() {
+        if (selectMon.value !== 'выбрать месяц' && selectYear.value !== 'выбрать год') {
+            createBtn.disabled = false;
+        } else {
+            createBtn.disabled = true;
+        }
+    }
+
+
+    let i = 0; //создаем итератор, для присвоения разных id
+    function createCalendar(year, month) {
+        year = +selectYear.value;
+        month = selectMon.selectedIndex - 1;
+        let div = document.createElement('div');
+        document.body.append(div);
+        let mon = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
+
+        function createMain(year, month) {
+            let table = `<table id =table${i}><tr><th><button id='prevYear${i}'>&laquo;</button></th><th><button id='prevMonth${i}'>&lsaquo;</button></th><th colspan="3">${mon[month]}&nbsp;${year}</th><th><button id='nextMonth${i}'>&rsaquo;</button></th><th><button id='nextYear${i}'>&raquo;</button></th></tr><tr><th>пн</th><th>вт</th><th>ср</th><th>чт</th><th>пт</th><th>сб</th><th>вс</th></tr><tr>`;
+            let newD = new Date(year, month); // эту переменную будем использовать в цикле для проверки чисел предыдущего месяца
+            let d = new Date(year, month); // основная переменная
+
+            for (let i = 0; i < getDay(d); i++) {
+                newD.setDate(d.getDate() - (getDay(d) - i));
+                table += `<td class='not-important'>${newD.getDate()}</td>`;
+                newD = new Date(year, month);
+            }
+
+            while (d.getMonth() === month) { // цикл заончится на первом дне следующего месяца
+                table += '<td>' + d.getDate() + '</td>';
+                if (getDay(d) === 6) { // вс, последний день - перевод строки
+                    table += '</tr><tr>';
+                }
+                d.setDate(d.getDate() + 1);
+            }
+
+            if (getDay(d) !== 0) {
+                for (let i = getDay(d); i < 7; i++) {
+                    table += `<td class='not-important'>${d.getDate()}</td>`;
+                    d.setDate(d.getDate() + 1);
+                }
+            }
+
+            table += '</tr></table>';
+            div.innerHTML = table;
+
+            let prevYear = document.querySelector(`#prevYear${i}`);
+            let nextYear = document.querySelector(`#nextYear${i}`);
+            let prevMonth = document.querySelector(`#prevMonth${i}`);
+            let nextMonth = document.querySelector(`#nextMonth${i}`);
+
+
+            let t = document.querySelector(`#table${i}`);
+            let rows = t.querySelectorAll('tr');
+            let td = t.querySelectorAll('td');
+
+            for (let i = 0; i < td.length; i++) {
+                td[i].addEventListener('click', (event) => {
+                    td.forEach(item => item.classList.remove('selected'));
+                    event.target.classList.add('selected');
+                });
+
+            }
+
+            for (let i = 2; i < rows.length; i++) {
+                if (rows[i].children[5]) {// проверка на пустоту в последней строке, если последний день месяца - вск, то будет пустая строка и ошибка
+                    rows[i].children[5].classList.add('weekend');
+                    rows[i].cells[6].classList.add('weekend');
+                }
+
+            }
+            i++;
+            deleteBtn.disabled = false;
+            t.addEventListener('click', createNewCalendar);
+
+
+            function createNewCalendar(event) {
+                switch (event.target) {
+                    case (prevYear):
+                        year -= 1;
+                        break;
+                    case (nextYear):
+                        year += 1;
+                        break;
+                    case (prevMonth):
+                        if (month === 0) {
+                            month = 12;
+                            year -= 1;
+                        }
+
+                        month -= 1;
+                        break;
+                    case (nextMonth):
+                        if (month === 11) {
+                            month = -1;
+                            year += 1;
+                        }
+                        month += 1;
+                        break;
+                    default:
+                        return;
+                }
+                createMain(year, month);
+            }
+        }
+
+        createMain(year, month);
+    }
+
+    function getDay(date) {
+        let day = date.getDay();
+        if (day === 0) {
+            day = 7
+        }
+        // сделать воскресенье (0) последним днем (6)
+        return day - 1;
+    }
+
+    function deleteCalendar() {
+        let divArr = document.querySelectorAll('div');
+        divArr[0].remove();
+        if (divArr.length === 1) {
+            deleteBtn.disabled = true;
+        }
+    }
+
+
+</script>
+</body>
+</html>

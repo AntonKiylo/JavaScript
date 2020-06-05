@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    const a = [1, 2, 3, 4, 5];
+
+    Array.prototype.multiplay = function() {
+        return this.map(i => i**2);
+    }
+
+
+    console.log(a.multiplay());
+    console.log([2, 4, 8, 10].multiplay());
+</script>
+</body>
+</html>
