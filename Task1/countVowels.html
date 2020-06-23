@@ -12,18 +12,14 @@
     countVowelLetters('Не будете ли Вы так любезны, Иван, передать мне блокнот и «Известия»');
 
     function countVowelLetters(inputText) {
-
         let vowelList = ['А', 'У', 'О', 'Ы', 'И', 'Э', 'Я', 'Ю', 'Ё', 'Е'];
-
         let count = 0;
-
         for (let letter of inputText) {
-            if (vowelList.includes(letter.toUpperCase())) {
+            if (vowelList.includes(letter.toLowerCase())) {
                 count++;
             }
         }
-
-        console.log(`Количество гласных = ${count}`);
+        console.log(`Количество гласных в выражении ${inputText} = ${count}`);
     }
 </script>
 </body>

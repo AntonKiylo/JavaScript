@@ -234,7 +234,7 @@
 
 
         requestAnimationFrame(ballMove);
-    }
+    };
 
     function countDown() {
         let counter = 3;
@@ -249,7 +249,7 @@
                 clearInterval(interval);
             }
         }, 1000)
-    }
+    };
 
     //вывод уведомления после завершения игры
     function alertFunction() {
@@ -258,7 +258,7 @@
         setTimeout(() => {
             countDownBlock.style.display = 'none';
         }, 3000)
-    }
+    };
 
     function checkCount() {
         setTimeout(() => {
@@ -272,7 +272,7 @@
         }, 3000)
 
         alertFunction();
-    }
+    };
     /*************************************/
 
     //вешаем событие keydown на document для определения какая клавиша нажата
@@ -296,7 +296,7 @@
         if (event.code === 'KeyS') {
             buttonIsPressed.leftDown = true;
         }
-    })
+    });
 
     //вешаем событие keydown на document для определения какая клавиша отжата
     document.addEventListener('keyup', function (event) {
@@ -316,7 +316,7 @@
         if (event.code === 'KeyS') {
             buttonIsPressed.leftDown = false;
         }
-    })
+    });
 </script>
 </body>
 </html>

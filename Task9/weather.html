@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+
 <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js"></script>
-<script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js"></script>
+    <script>
+        function getWeather(_cityID) {
+            let cityID = _cityID,
+                apiUrl = "http://api.openweathermap.org/data/2.5",
+                apiKey = "00bfb1934a8e8968b9f6660249c58bce",
+                apiQuery = apiUrl + "/weather?id=" + cityID + "&units=metric&lang=ru&appid=" + apiKey;
+
+            fetch(apiQuery)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => console.error("Ошибка получение погоды. Причина: " + error));
+        }
+        getWeather(625144);
+    </script>
 </body>
+
 </html>
